@@ -1,0 +1,175 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); }
+img { display: block; max-width: 100%; }
+
+/* ===== HERO ===== */
+.landing-hero {
+  position: relative;
+  background: var(--alpha-blue);
+  color: #fff;
+  overflow: hidden;
+  background-image: url('../artifacts/Alpha School Toronto.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.landing-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,80,0.72) 0%, rgba(0,0,180,0.78) 100%);
+  z-index: 1;
+}
+.landing-hero .inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 100px 32px 80px;
+  position: relative;
+  z-index: 2;
+}
+.landing-hero .hero-text-box {
+  background: rgba(0, 0, 80, 0.45);
+  backdrop-filter: blur(12px);
+  border-radius: var(--r-xl);
+  padding: 48px 48px 40px;
+}
+.landing-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  margin: 0 0 20px;
+  color: #fff;
+}
+.landing-hero h1 em {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--alpha-sky);
+}
+.landing-hero .lede {
+  font-size: 20px;
+  line-height: 1.4;
+  margin: 0;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ===== LETTER ===== */
+.letter-section {
+  padding: 80px 32px 96px;
+}
+.letter-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.letter-greeting {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--ink);
+  margin: 0 0 32px;
+}
+.letter-inner > p {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--ink-2);
+  margin: 0 0 24px;
+}
+.letter-heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  margin: 48px 0 20px;
+  color: var(--ink);
+}
+.letter-inner blockquote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 28px 0 28px 0;
+  padding: 0 0 0 24px;
+  border-left: 3px solid var(--alpha-blue);
+}
+
+/* ===== PARENT QUOTE CARD ===== */
+.parent-quote-card {
+  background: var(--alpha-blue);
+  color: #fff;
+  border-radius: var(--r-xl);
+  padding: 40px 44px;
+  margin: 36px 0;
+}
+.parent-quote {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.35;
+  margin: 0 0 16px;
+  color: #fff;
+}
+.parent-quote-attr {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--alpha-sky);
+}
+
+/* ===== LETTER CTA ===== */
+.letter-cta-section {
+  background: var(--paper-3);
+  border-radius: var(--r-xl);
+  padding: 44px 48px;
+  margin: 48px 0 40px;
+  text-align: center;
+}
+.letter-cta-section .letter-heading {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+.letter-cta-section p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--ink-3);
+  margin: 0 0 28px;
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.letter-cta {
+  font-size: 15px;
+  padding: 18px 36px;
+  text-decoration: none;
+}
+
+/* ===== SIGN-OFF ===== */
+.letter-sign-off {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 24px;
+  color: var(--ink);
+  margin: 48px 0 0;
+}
+
+/* ===== FOOTER (inherits from kit.css) ===== */
+.footer-inner {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .landing-hero .inner { padding: 60px 20px 60px; }
+  .landing-hero .hero-text-box { padding: 32px 28px 28px; }
+  .letter-section { padding: 48px 20px 64px; }
+  .letter-inner blockquote { font-size: 19px; }
+  .parent-quote-card { padding: 28px 24px; }
+  .parent-quote { font-size: 20px; }
+  .letter-cta-section { padding: 32px 24px; }
+  .footer-inner { grid-template-columns: 1fr; }
+}

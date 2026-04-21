@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parent Stories — Alpha Parents Hub</title>
+  <meta name="description" content="Candid stories from Toronto families exploring, researching, committing to, and enrolled at Alpha School.">
+  <link rel="stylesheet" href="css/colors-and-type.css">
+  <link rel="stylesheet" href="css/kit.css">
+  <link rel="stylesheet" href="css/page.css">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="js/stories.js"></script>
+  <script type="text/babel" src="js/components.jsx"></script>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function TweaksPanel({ tweaks, setTweaks }) {
+      const update = (key, val) => setTweaks(prev => ({ ...prev, [key]: val }));
+      return (
+        <div className="tweaks-panel">
+          <h4>Tweaks</h4>
+          <p className="sub">Adjust the feed layout and how a family's journey status is visualized.</p>
+          <div className="group">
+            <div className="group-lbl">Feed layout</div>
+            <div className="tw-chips">
+              {[['grid','Grid'],['masonry','Editorial'],['list','List']].map(([v,l]) => (
+                <button key={v}
+                  className={`tw-chip ${tweaks.feedLayout === v ? 'active' : ''}`}
+                  onClick={() => update('feedLayout', v)}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="group">
+            <div className="group-lbl">Status visualization</div>
+            <div className="tw-chips">
+              {[['badge','Badge'],['accent','Accent bar'],['progress','4-step pills']].map(([v,l]) => (
+                <button key={v}
+                  className={`tw-chip ${tweaks.statusViz === v ? 'active' : ''}`}
+                  onClick={() => update('statusViz', v)}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{marginTop:12,textAlign:'right'}}>
+            <button className="btn btn-ghost btn-sm" onClick={() => setTweaks(prev => ({...prev, showTweaks: false}))}>
+              Close
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [tweaks, setTweaks] = useState({
+        feedLayout: 'grid',
+        statusViz: 'badge',
+        showTweaks: false
+      });
+      const [openStory, setOpenStory] = useState(null);
+
+      useEffect(() => {
+        const id = localStorage.getItem('ath_story');
+        if (id) {
+          const s = STORIES.find(x => x.id === id);
+          if (s) setOpenStory(s);
+        }
+      }, []);
+
+      useEffect(() => {
+        if (openStory) localStorage.setItem('ath_story', openStory.id);
+        else localStorage.removeItem('ath_story');
+      }, [openStory]);
+
+      const featured = STORIES.find(s => s.id === 'lee');
+
+      return (
+        <>
+          <Nav />
+          <Hero />
+          <Featured story={featured} onOpen={setOpenStory} />
+          <Feed stories={STORIES} onOpen={setOpenStory} layout={tweaks.feedLayout} statusViz={tweaks.statusViz} />
+          <FAQ onOpenStory={setOpenStory} />
+          <ShareCTA />
+          <Footer />
+          {openStory && <StoryModal story={openStory} onClose={() => setOpenStory(null)} />}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

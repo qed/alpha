@@ -1,6 +1,7 @@
 "use server";
 
 import { intakeFormSchema } from "@/lib/validations/intake-schema";
+import { notifyNewProspect } from "./notifications";
 import { createClient } from "@supabase/supabase-js";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
@@ -107,6 +108,17 @@ export async function submitIntakeForm(
 
   if (result?.error) {
     return { success: false, error: result.message || "Invalid geography" };
+  }
+
+  if (!result.is_resubmission) {
+    notifyNewProspect({
+      geographyId: result.geography_id,
+      geographyName: data.geography_slug,
+      parentFirstName: data.parent_first,
+      childCount: data.children.length,
+    }).catch((err) =>
+      console.error("Notification dispatch failed:", err)
+    );
   }
 
   return {

@@ -1,60 +1,76 @@
--- Seed 53 geographies: 23 existing campuses + 30 pre-launch
+-- Seed 55 geographies — all pre-launch initially
 -- Slugs are URL-safe lowercase identifiers for intake form URLs
 
 INSERT INTO geographies (slug, name, region, country, status) VALUES
-  -- Existing campuses (23)
-  ('austin', 'Austin', 'South', 'US', 'existing-campus'),
-  ('dallas', 'Dallas', 'South', 'US', 'existing-campus'),
-  ('houston', 'Houston', 'South', 'US', 'existing-campus'),
-  ('san-antonio', 'San Antonio', 'South', 'US', 'existing-campus'),
-  ('miami', 'Miami', 'Southeast', 'US', 'existing-campus'),
-  ('tampa', 'Tampa', 'Southeast', 'US', 'existing-campus'),
-  ('orlando', 'Orlando', 'Southeast', 'US', 'existing-campus'),
-  ('jacksonville', 'Jacksonville', 'Southeast', 'US', 'existing-campus'),
-  ('atlanta', 'Atlanta', 'Southeast', 'US', 'existing-campus'),
-  ('nashville', 'Nashville', 'South', 'US', 'existing-campus'),
-  ('charlotte', 'Charlotte', 'Southeast', 'US', 'existing-campus'),
-  ('raleigh', 'Raleigh', 'Southeast', 'US', 'existing-campus'),
-  ('phoenix', 'Phoenix', 'West', 'US', 'existing-campus'),
-  ('scottsdale', 'Scottsdale', 'West', 'US', 'existing-campus'),
-  ('denver', 'Denver', 'West', 'US', 'existing-campus'),
-  ('las-vegas', 'Las Vegas', 'West', 'US', 'existing-campus'),
-  ('san-diego', 'San Diego', 'West', 'US', 'existing-campus'),
-  ('los-angeles', 'Los Angeles', 'West', 'US', 'existing-campus'),
-  ('chicago', 'Chicago', 'Midwest', 'US', 'existing-campus'),
-  ('columbus', 'Columbus', 'Midwest', 'US', 'existing-campus'),
-  ('toronto', 'Toronto', 'Ontario', 'CA', 'existing-campus'),
-  ('vancouver', 'Vancouver', 'British Columbia', 'CA', 'existing-campus'),
-  ('calgary', 'Calgary', 'Alberta', 'CA', 'existing-campus'),
+  -- Texas
+  ('austin', 'Austin', 'Texas', 'US', 'pre-launch'),
+  ('alpha-high-austin', 'Alpha High Austin', 'Texas', 'US', 'pre-launch'),
+  ('lake-travis', 'Lake Travis', 'Texas', 'US', 'pre-launch'),
+  ('plano', 'Plano', 'Texas', 'US', 'pre-launch'),
+  ('carrollton', 'Carrollton', 'Texas', 'US', 'pre-launch'),
+  ('southlake', 'Southlake', 'Texas', 'US', 'pre-launch'),
+  ('fort-worth', 'Fort Worth', 'Texas', 'US', 'pre-launch'),
+  ('houston', 'Houston', 'Texas', 'US', 'pre-launch'),
+  ('the-woodlands', 'The Woodlands', 'Texas', 'US', 'pre-launch'),
+  ('brownsville', 'Brownsville', 'Texas', 'US', 'pre-launch'),
+  ('highland-park', 'Highland Park', 'Texas', 'US', 'pre-launch'),
 
-  -- Pre-launch (30)
-  ('boston', 'Boston', 'Northeast', 'US', 'pre-launch'),
+  -- Florida
+  ('miami', 'Miami', 'Florida', 'US', 'pre-launch'),
+  ('miami-beach', 'Miami Beach', 'Florida', 'US', 'pre-launch'),
+  ('key-biscayne', 'Key Biscayne', 'Florida', 'US', 'pre-launch'),
+  ('tampa', 'Tampa', 'Florida', 'US', 'pre-launch'),
+  ('palm-beach', 'Palm Beach', 'Florida', 'US', 'pre-launch'),
+  ('boca-raton', 'Boca Raton', 'Florida', 'US', 'pre-launch'),
+
+  -- Southeast
+  ('atlanta', 'Atlanta', 'Southeast', 'US', 'pre-launch'),
+  ('nashville', 'Nashville', 'Southeast', 'US', 'pre-launch'),
+  ('charlotte', 'Charlotte', 'Southeast', 'US', 'pre-launch'),
+  ('raleigh', 'Raleigh', 'Southeast', 'US', 'pre-launch'),
+
+  -- Northeast
   ('new-york', 'New York', 'Northeast', 'US', 'pre-launch'),
-  ('washington-dc', 'Washington DC', 'Northeast', 'US', 'pre-launch'),
-  ('philadelphia', 'Philadelphia', 'Northeast', 'US', 'pre-launch'),
-  ('pittsburgh', 'Pittsburgh', 'Northeast', 'US', 'pre-launch'),
-  ('minneapolis', 'Minneapolis', 'Midwest', 'US', 'pre-launch'),
-  ('detroit', 'Detroit', 'Midwest', 'US', 'pre-launch'),
-  ('milwaukee', 'Milwaukee', 'Midwest', 'US', 'pre-launch'),
+  ('boston', 'Boston', 'Northeast', 'US', 'pre-launch'),
+  ('boston-suburbs', 'Boston Suburbs', 'Northeast', 'US', 'pre-launch'),
+  ('greenwich', 'Greenwich', 'Northeast', 'US', 'pre-launch'),
+  ('bethesda', 'Bethesda', 'Northeast', 'US', 'pre-launch'),
+  ('chantilly', 'Chantilly', 'Northeast', 'US', 'pre-launch'),
+  ('pioneer-valley', 'Pioneer Valley', 'Northeast', 'US', 'pre-launch'),
+
+  -- Midwest
+  ('chicago', 'Chicago', 'Midwest', 'US', 'pre-launch'),
   ('kansas-city', 'Kansas City', 'Midwest', 'US', 'pre-launch'),
-  ('st-louis', 'St. Louis', 'Midwest', 'US', 'pre-launch'),
-  ('indianapolis', 'Indianapolis', 'Midwest', 'US', 'pre-launch'),
-  ('cincinnati', 'Cincinnati', 'Midwest', 'US', 'pre-launch'),
-  ('seattle', 'Seattle', 'West', 'US', 'pre-launch'),
-  ('portland', 'Portland', 'West', 'US', 'pre-launch'),
-  ('sacramento', 'Sacramento', 'West', 'US', 'pre-launch'),
-  ('san-francisco', 'San Francisco', 'West', 'US', 'pre-launch'),
-  ('salt-lake-city', 'Salt Lake City', 'West', 'US', 'pre-launch'),
-  ('boise', 'Boise', 'West', 'US', 'pre-launch'),
-  ('new-orleans', 'New Orleans', 'South', 'US', 'pre-launch'),
-  ('memphis', 'Memphis', 'South', 'US', 'pre-launch'),
-  ('richmond', 'Richmond', 'Southeast', 'US', 'pre-launch'),
-  ('charleston', 'Charleston', 'Southeast', 'US', 'pre-launch'),
-  ('savannah', 'Savannah', 'Southeast', 'US', 'pre-launch'),
-  ('birmingham', 'Birmingham', 'Southeast', 'US', 'pre-launch'),
-  ('oklahoma-city', 'Oklahoma City', 'South', 'US', 'pre-launch'),
-  ('tulsa', 'Tulsa', 'South', 'US', 'pre-launch'),
-  ('albuquerque', 'Albuquerque', 'West', 'US', 'pre-launch'),
-  ('montreal', 'Montreal', 'Quebec', 'CA', 'pre-launch'),
-  ('ottawa', 'Ottawa', 'Ontario', 'CA', 'pre-launch'),
-  ('edmonton', 'Edmonton', 'Alberta', 'CA', 'pre-launch');
+  ('oklahoma-city', 'Oklahoma City', 'Midwest', 'US', 'pre-launch'),
+  ('tulsa', 'Tulsa', 'Midwest', 'US', 'pre-launch'),
+
+  -- West
+  ('denver', 'Denver', 'West', 'US', 'pre-launch'),
+  ('scottsdale', 'Scottsdale', 'West', 'US', 'pre-launch'),
+  ('las-vegas', 'Las Vegas', 'West', 'US', 'pre-launch'),
+  ('jackson-hole', 'Jackson Hole', 'West', 'US', 'pre-launch'),
+  ('park-city', 'Park City', 'West', 'US', 'pre-launch'),
+  ('kirkland', 'Kirkland', 'West', 'US', 'pre-launch'),
+
+  -- California
+  ('orange-county', 'Orange County', 'California', 'US', 'pre-launch'),
+  ('la-jolla', 'La Jolla', 'California', 'US', 'pre-launch'),
+  ('beverly-hills', 'Beverly Hills', 'California', 'US', 'pre-launch'),
+  ('santa-monica', 'Santa Monica', 'California', 'US', 'pre-launch'),
+  ('malibu', 'Malibu', 'California', 'US', 'pre-launch'),
+  ('santa-barbara', 'Santa Barbara', 'California', 'US', 'pre-launch'),
+  ('east-bay', 'East Bay', 'California', 'US', 'pre-launch'),
+  ('palo-alto', 'Palo Alto', 'California', 'US', 'pre-launch'),
+  ('san-francisco', 'San Francisco', 'California', 'US', 'pre-launch'),
+  ('sausalito', 'Sausalito', 'California', 'US', 'pre-launch'),
+  ('south-bay', 'South Bay', 'California', 'US', 'pre-launch'),
+
+  -- Puerto Rico
+  ('dorado', 'Dorado', 'Puerto Rico', 'US', 'pre-launch'),
+  ('san-juan', 'San Juan', 'Puerto Rico', 'US', 'pre-launch'),
+
+  -- Canada
+  ('toronto', 'Toronto', 'Ontario', 'CA', 'pre-launch'),
+  ('north-toronto', 'North Toronto', 'Ontario', 'CA', 'pre-launch'),
+  ('west-toronto', 'West Toronto', 'Ontario', 'CA', 'pre-launch'),
+  ('burlington', 'Burlington', 'Ontario', 'CA', 'pre-launch');

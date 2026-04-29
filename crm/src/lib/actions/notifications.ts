@@ -17,7 +17,7 @@ export async function notifyNewProspect(data: {
     if (!recipient) return;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://enroll.alphaschool.com";
-    const prospectsUrl = `${baseUrl}/prospects`;
+    const prospectsUrl = `${baseUrl}/crm/prospects`;
 
     await resend.emails.send({
       from: "Alpha Enrollment <enrollment@alphaschool.com>",

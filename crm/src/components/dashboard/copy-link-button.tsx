@@ -9,11 +9,10 @@ interface CopyLinkButtonProps {
 export function CopyLinkButton({ geographySlug }: CopyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
 
-  const basePath = process.env.__NEXT_ROUTER_BASEPATH || "/crm";
   const intakeUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}${basePath}/${geographySlug}`
-      : `${basePath}/${geographySlug}`;
+      ? `${window.location.origin}/${geographySlug}`
+      : `/${geographySlug}`;
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(intakeUrl);

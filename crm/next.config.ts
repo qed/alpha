@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  basePath: "/crm",
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

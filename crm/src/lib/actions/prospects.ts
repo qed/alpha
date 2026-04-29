@@ -2,7 +2,11 @@
 
 import { requireChampion } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { isValidTransition, type PipelineStage } from "@/lib/constants/pipeline";
+import {
+  isValidTransition,
+  ENROLLMENT_THRESHOLD,
+  type PipelineStage,
+} from "@/lib/constants/pipeline";
 import {
   updateStatusSchema,
   addNoteSchema,
@@ -82,6 +86,8 @@ export async function updateProspectStatus(
       new_status,
     },
   });
+
+  await checkAutoPromotion(session.geographyId, session.userId);
 
   return { success: true };
 }
@@ -221,4 +227,55 @@ export async function createProspect(data: unknown): Promise<ActionResult & { pr
   });
 
   return { success: true, prospectId: prospect.id };
+}
+
+export async function checkAutoPromotion(
+  geographyId: string,
+  actorId: string
+): Promise<void> {
+  const supabase = await getSupabaseServerClient();
+
+  const { data: geography } = await supabase
+    .from("geographies")
+    .select("id, status")
+    .eq("id", geographyId)
+    .single();
+
+  if (!geography || geography.status !== "pre-launch") return;
+
+  const { data: children } = await supabase
+    .from("children")
+    .select("id, prospects!inner(status)")
+    .eq("geography_id", geographyId);
+
+  if (!children) return;
+
+  let enrolledCount = 0;
+  for (const child of children) {
+    const status = (child.prospects as unknown as { status: PipelineStage })
+      .status;
+    if (status === "committed" || status === "enrolled") {
+      enrolledCount++;
+    }
+  }
+
+  if (enrolledCount >= ENROLLMENT_THRESHOLD) {
+    await supabase
+      .from("geographies")
+      .update({ status: "active-campus" })
+      .eq("id", geographyId);
+
+    await supabase.from("audit_log").insert({
+      actor_id: actorId,
+      action: "status-change",
+      geography_id: geographyId,
+      metadata: {
+        entity: "geography",
+        old_status: "pre-launch",
+        new_status: "active-campus",
+        reason: "auto-promotion",
+        enrolled_count: enrolledCount,
+      },
+    });
+  }
 }

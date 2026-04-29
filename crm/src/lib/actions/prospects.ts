@@ -1,6 +1,6 @@
 "use server";
 
-import { requireChampion } from "@/lib/auth";
+import { requireChampion, requireAdmin } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   isValidTransition,
@@ -278,4 +278,45 @@ export async function checkAutoPromotion(
       },
     });
   }
+}
+
+export async function deleteProspect(
+  prospectId: string
+): Promise<ActionResult> {
+  const session = await requireAdmin();
+  const supabase = await getSupabaseServerClient();
+
+  const { data: prospect } = await supabase
+    .from("prospects")
+    .select("id, geography_id, parent_first")
+    .eq("id", prospectId)
+    .single();
+
+  if (!prospect) {
+    return { success: false, error: "Prospect not found." };
+  }
+
+  await supabase.from("notes").delete().eq("prospect_id", prospectId);
+  await supabase.from("status_history").delete().eq("prospect_id", prospectId);
+  await supabase.from("children").delete().eq("prospect_id", prospectId);
+  const { error } = await supabase
+    .from("prospects")
+    .delete()
+    .eq("id", prospectId);
+
+  if (error) {
+    return { success: false, error: "Failed to delete prospect." };
+  }
+
+  await supabase.from("audit_log").insert({
+    actor_id: session.userId,
+    action: "prospect-delete",
+    geography_id: prospect.geography_id,
+    prospect_id: prospectId,
+    metadata: {
+      deleted_prospect_id: prospectId,
+    },
+  });
+
+  return { success: true };
 }

@@ -22,7 +22,7 @@ export default async function HubPage() {
               "linear-gradient(180deg, rgba(0,0,80,0.72) 0%, rgba(0,0,180,0.78) 100%)",
           }}
         />
-        <div className="max-w-[760px] mx-auto px-8 pt-16 pb-12 relative z-[2] max-sm:px-5 max-sm:pt-10 max-sm:pb-8">
+        <div className="max-w-[920px] mx-auto px-8 pt-16 pb-12 relative z-[2] max-sm:px-5 max-sm:pt-10 max-sm:pb-8">
           <div className="bg-[rgba(0,0,80,0.45)] backdrop-blur-[12px] rounded-xl p-10 pb-8 max-sm:p-6 max-sm:pb-6">
             <h1 className="font-[family-name:var(--font-display)] font-extrabold text-[clamp(24px,5vw,40px)] leading-[1.05] tracking-[-0.03em] mb-3 text-white">
               Alpha Champions Hub

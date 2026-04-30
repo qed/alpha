@@ -1,7 +1,7 @@
 ---
 title: "feat: Hub Intro Page with Sidebar Navigation"
 type: feat
-status: active
+status: completed
 date: 2026-04-30
 origin: docs/brainstorms/2026-04-30-hub-intro-page-requirements.md
 ---
@@ -92,7 +92,7 @@ The current `/hub` page is a single-column marketing page that auto-redirects lo
 
 ## Implementation Units
 
-- [ ] **Unit 1: Hub Sidebar Component**
+- [x] **Unit 1: Hub Sidebar Component**
 
 **Goal:** Create the Champions Hub sidebar component matching the design handoff shell, with auth-aware navigation and the Alpha Toronto callout.
 
@@ -137,7 +137,7 @@ The current `/hub` page is a single-column marketing page that auto-redirects lo
 
 ---
 
-- [ ] **Unit 2: Hub Intro Page Rewrite**
+- [x] **Unit 2: Hub Intro Page Rewrite**
 
 **Goal:** Replace the current `/hub` page with the two-panel shell (sidebar + welcome content). Remove auto-redirect for logged-in users. Build the welcome content: tighter hero with merged value prop, tool preview cards, and short CTA.
 
@@ -191,7 +191,7 @@ The current `/hub` page is a single-column marketing page that auto-redirects lo
 
 ---
 
-- [ ] **Unit 3: Mobile Responsive Sidebar**
+- [x] **Unit 3: Mobile Responsive Sidebar**
 
 **Goal:** Make the sidebar responsive with a hamburger menu on mobile. Sidebar hidden by default on mobile, slides out as an overlay drawer.
 
@@ -238,7 +238,7 @@ The current `/hub` page is a single-column marketing page that auto-redirects lo
 
 ---
 
-- [ ] **Unit 4: Library Placeholder Page**
+- [x] **Unit 4: Library Placeholder Page**
 
 **Goal:** Create a minimal Library placeholder page outside the `(dashboard)` route group so it is accessible without authentication.
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Archivo, Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
@@ -37,7 +38,9 @@ export default function RootLayout({
       lang="en"
       className={`${archivo.variable} ${inter.variable} ${instrumentSerif.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClerkProvider>{children}</ClerkProvider>
+      </body>
     </html>
   );
 }

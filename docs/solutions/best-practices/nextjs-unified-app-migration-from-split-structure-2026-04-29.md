@@ -153,9 +153,27 @@ export default async function DashboardLayout({ children }) {
 }
 ```
 
-### 5. Use server-side auth guards instead of middleware
+### 5. Use Clerk middleware with server-side auth guards
 
-When Clerk middleware causes Edge Runtime incompatibilities on Vercel:
+> **Updated 2026-04-29**: The original guidance here recommended removing Clerk middleware due to Edge Runtime incompatibility. Vercel now supports Node.js middleware via Fluid Compute, and Clerk v7's `auth()` *requires* middleware to function. See [clerk-v7-auth-requires-middleware](../runtime-errors/clerk-v7-auth-requires-middleware-2026-04-29.md).
+
+Add `src/middleware.ts` with the standard Clerk configuration — it establishes auth context without blocking requests:
+
+```typescript
+// src/middleware.ts
+import { clerkMiddleware } from "@clerk/nextjs/server";
+
+export default clerkMiddleware();
+
+export const config = {
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+  ],
+};
+```
+
+Then use per-page guards for role-based access control:
 
 ```typescript
 // src/lib/auth.ts — per-page guards
@@ -194,7 +212,7 @@ Each step produces a deployable, testable state:
 
 - **Global CSS bleeds silently**: A static site's `body { font-family: Georgia }` overrides every page once imported. These bugs only surface when navigating between sections, making them hard to catch in isolation.
 
-- **Middleware-free auth is more portable**: Clerk middleware depends on Edge Runtime APIs unavailable in some deployment targets. Server-side guards work universally and make auth boundaries explicit.
+- **Clerk middleware is required for auth()**: Clerk v7's `auth()` throws when middleware is not detected. Vercel Fluid Compute now supports Node.js middleware, so the original Edge Runtime limitation no longer applies. Use middleware for auth context, per-page guards for access control.
 
 - **Incremental ordering reduces blast radius**: Each step is independently testable. If page conversion reveals a CSS issue, route restructuring is already stable.
 

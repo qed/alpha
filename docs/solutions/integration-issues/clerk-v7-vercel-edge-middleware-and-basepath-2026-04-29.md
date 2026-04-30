@@ -21,6 +21,7 @@ tags:
   - nextjs-16
   - deployment
   - 404
+last_updated: 2026-04-29
 ---
 
 # Clerk v7 Vercel Edge Runtime Middleware Failure and basePath 404s
@@ -80,7 +81,7 @@ export default nextConfig;
 
 ## Prevention
 
-- **Do not use middleware for auth if the auth library requires Node.js APIs.** Check whether your auth provider (Clerk, Auth.js, etc.) is Edge-compatible before placing it in `middleware.ts`. Prefer layout-level and page-level auth checks, which always run on Node.js in server components.
+- **~~Do not use middleware for auth if the auth library requires Node.js APIs.~~** **Superseded**: Vercel now supports Node.js middleware via Fluid Compute. Clerk v7's `auth()` *requires* middleware — removing it causes all authenticated routes to crash. See [clerk-v7-auth-requires-middleware](../runtime-errors/clerk-v7-auth-requires-middleware-2026-04-29.md).
 
 - **Only set `basePath` when the app is actually served under a subpath.** If the app has its own domain or is the root of a Vercel project, `basePath` must be omitted.
 

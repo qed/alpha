@@ -22,7 +22,7 @@ export default async function HubPage() {
               "linear-gradient(180deg, rgba(0,0,80,0.72) 0%, rgba(0,0,180,0.78) 100%)",
           }}
         />
-        <div className="max-w-[920px] mx-auto px-8 pt-16 pb-12 relative z-[2] max-sm:px-5 max-sm:pt-10 max-sm:pb-8">
+        <div className="max-w-[920px] mx-auto px-8 pt-10 pb-10 relative z-[2] max-sm:px-5 max-sm:pt-8 max-sm:pb-6">
           <div className="bg-[rgba(0,0,80,0.45)] backdrop-blur-[12px] rounded-xl p-10 pb-8 max-sm:p-6 max-sm:pb-6">
             <h1 className="font-[family-name:var(--font-display)] font-extrabold text-[clamp(24px,5vw,40px)] leading-[1.05] tracking-[-0.03em] mb-3 text-white">
               Alpha Champions Hub
@@ -83,7 +83,7 @@ export default async function HubPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-8 py-16 max-sm:px-5 max-sm:py-10">
+      <section className="px-8 py-8 max-sm:px-5 max-sm:py-6">
         <div className="max-w-[600px] mx-auto text-center">
           <div className="bg-paper-3 rounded-xl px-10 py-9 max-sm:px-6 max-sm:py-7">
             <h2 className="font-[family-name:var(--font-display)] font-extrabold text-[24px] tracking-[-0.025em] mb-3 text-ink">
@@ -109,7 +109,7 @@ export default async function HubPage() {
       </section>
 
       {/* Alpha Toronto callout */}
-      <section className="px-8 pb-12 max-sm:px-5 max-sm:pb-8">
+      <section className="px-8 pb-6 max-sm:px-5 max-sm:pb-4">
         <div className="max-w-[600px] mx-auto text-center">
           <p className="text-sm text-ink-4">
             Built by Alpha Toronto. Know someone in Toronto?{" "}

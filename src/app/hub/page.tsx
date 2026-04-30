@@ -1,15 +1,14 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { requireAuth } from "@/lib/auth";
 import { PublicNavbar } from "@/components/shared/public-navbar";
 
 export default async function HubPage() {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
 
   if (userId) {
-    const session = await requireAuth();
-    if (session.role === "admin") {
+    const role = (sessionClaims?.role as string) || "champion";
+    if (role === "admin") {
       redirect("/hub/leaderboard");
     }
     redirect("/hub/dashboard");

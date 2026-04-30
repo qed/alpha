@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 
 const mockAuth = vi.fn();
 const mockRedirect = vi.fn();
-const mockRequireAuth = vi.fn();
 
 vi.mock("@clerk/nextjs/server", () => ({
   auth: () => mockAuth(),
@@ -14,10 +13,6 @@ vi.mock("next/navigation", () => ({
     mockRedirect(url);
     throw new Error(`NEXT_REDIRECT:${url}`);
   },
-}));
-
-vi.mock("@/lib/auth", () => ({
-  requireAuth: () => mockRequireAuth(),
 }));
 
 vi.mock("next/image", () => ({
@@ -105,11 +100,6 @@ describe("HubPage", () => {
         userId: "user_admin",
         sessionClaims: { role: "admin" },
       });
-      mockRequireAuth.mockResolvedValue({
-        userId: "user_admin",
-        role: "admin",
-        geographyId: null,
-      });
 
       await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockRedirect).toHaveBeenCalledWith("/hub/leaderboard");
@@ -120,11 +110,6 @@ describe("HubPage", () => {
         userId: "user_champion",
         sessionClaims: { role: "champion" },
       });
-      mockRequireAuth.mockResolvedValue({
-        userId: "user_champion",
-        role: "champion",
-        geographyId: "geo-123",
-      });
 
       await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");
       expect(mockRedirect).toHaveBeenCalledWith("/hub/dashboard");
@@ -134,11 +119,6 @@ describe("HubPage", () => {
       mockAuth.mockResolvedValue({
         userId: "user_norole",
         sessionClaims: {},
-      });
-      mockRequireAuth.mockResolvedValue({
-        userId: "user_norole",
-        role: "champion",
-        geographyId: null,
       });
 
       await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");

@@ -78,12 +78,14 @@ describe("HubPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders the Enter the Hub CTA linking to /hub/sign-in", async () => {
+    it("renders Enter the Hub CTAs linking to /hub/sign-in", async () => {
       const page = await HubPage();
       render(page);
-      const cta = screen.getByText("Enter the Hub");
-      expect(cta).toBeInTheDocument();
-      expect(cta.closest("a")).toHaveAttribute("href", "/hub/sign-in");
+      const ctas = screen.getAllByText("Enter the Hub");
+      expect(ctas.length).toBeGreaterThanOrEqual(2);
+      for (const cta of ctas) {
+        expect(cta.closest("a")).toHaveAttribute("href", "/hub/sign-in");
+      }
     });
 
     it("renders the PublicNavbar", async () => {

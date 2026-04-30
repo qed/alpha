@@ -16,7 +16,7 @@ export default async function HubPage() {
 
   return (
     <div className="bg-paper text-ink">
-      <PublicNavbar />
+      <PublicNavbar variant="hub" />
 
       {/* HERO */}
       <section

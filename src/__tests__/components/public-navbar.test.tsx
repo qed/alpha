@@ -21,13 +21,18 @@ describe("PublicNavbar", () => {
     expect(link).toHaveAttribute("href", "/hub");
   });
 
-  it("renders Join the Community link pointing to community.alpha.school", () => {
+  it("renders Join the Community CTA by default", () => {
     render(<PublicNavbar />);
     const link = screen.getByText("Join the Community");
     expect(link).toHaveAttribute(
       "href",
       expect.stringContaining("community.alpha.school")
     );
-    expect(link).toHaveAttribute("target", "_blank");
+  });
+
+  it("renders Enter the Hub CTA when variant is hub", () => {
+    render(<PublicNavbar variant="hub" />);
+    const link = screen.getByText("Enter the Hub");
+    expect(link).toHaveAttribute("href", "/hub/sign-in");
   });
 });

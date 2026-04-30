@@ -247,21 +247,28 @@ export function HubSidebar({ isAuthenticated, isOpen, onClose }: HubSidebarProps
           <span className="text-white/50 italic text-xs">Set after sign-in</span>
         </div>
 
-        {/* Toronto callout — pushed to bottom */}
-        <div className="mt-auto border-t border-white/10 px-5 py-4">
-          <p className="text-[11px] leading-relaxed text-white/55 flex items-center gap-1.5 flex-wrap">
+        {/* Toronto callout — pushed to bottom on desktop, tight on mobile */}
+        <div className="lg:mt-auto mt-4 border-t border-white/10 px-4 py-4 flex flex-col items-center gap-2.5 text-center">
+          <p className="text-[11px] text-white/55 flex items-center gap-1.5">
             <span>With</span>
             <span className="text-red-400">❤️</span>
             <span>by</span>
+          </p>
+          <a
+            href="https://alphatoronto.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white rounded-lg px-3 py-2 inline-block hover:shadow-md transition-shadow"
+          >
             <Image
               src="/artifacts/Alpha_Toronto_Transparent.png"
               alt="Alpha Toronto"
-              width={80}
-              height={24}
-              className="h-4 w-auto"
+              width={140}
+              height={42}
+              className="h-7 w-auto"
             />
-          </p>
-          <p className="text-[11px] leading-relaxed text-white/55 mt-1.5">
+          </a>
+          <p className="text-[11px] leading-relaxed text-white/55">
             Know someone in Toronto?{" "}
             <a
               href="https://alphatoronto.org"

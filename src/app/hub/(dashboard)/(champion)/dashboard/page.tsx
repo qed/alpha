@@ -11,6 +11,21 @@ import { CopyLinkButton } from "@/components/dashboard/copy-link-button";
 
 export default async function ChampionDashboardPage() {
   const session = await requireChampion();
+
+  if (!session.geographyId) {
+    return (
+      <div className="text-center py-16 text-ink-3">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-ink mb-3">
+          Almost there!
+        </h2>
+        <p className="text-lg leading-relaxed max-w-md mx-auto">
+          Your account is set up, but a geography hasn&rsquo;t been assigned yet.
+          Please contact your administrator to get started.
+        </p>
+      </div>
+    );
+  }
+
   const supabase = await getSupabaseServerClient();
 
   const { data: geography } = await supabase

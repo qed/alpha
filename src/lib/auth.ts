@@ -32,10 +32,7 @@ export async function requireAdmin(): Promise<SessionInfo> {
   return session;
 }
 
-export async function requireChampion(): Promise<SessionInfo & { geographyId: string }> {
+export async function requireChampion(): Promise<SessionInfo> {
   const session = await requireAuth();
-  if (!session.geographyId) {
-    redirect("/hub/sign-in");
-  }
-  return session as SessionInfo & { geographyId: string };
+  return session;
 }

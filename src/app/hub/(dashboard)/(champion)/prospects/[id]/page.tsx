@@ -14,6 +14,15 @@ interface Props {
 export default async function ProspectDetailPage({ params }: Props) {
   const { id } = await params;
   const session = await requireChampion();
+
+  if (!session.geographyId) {
+    return (
+      <div className="text-center py-12 text-ink-3">
+        No geography assigned yet. Please contact your administrator.
+      </div>
+    );
+  }
+
   const supabase = await getSupabaseServerClient();
 
   const { data: prospect } = await supabase

@@ -23,6 +23,9 @@ export async function updateProspectStatus(
   data: unknown
 ): Promise<ActionResult> {
   const session = await requireChampion();
+  if (!session.geographyId) {
+    return { success: false, error: "No geography assigned." };
+  }
   const parsed = updateStatusSchema.safeParse(data);
   if (!parsed.success) {
     return { success: false, error: "Invalid input." };
@@ -94,6 +97,9 @@ export async function updateProspectStatus(
 
 export async function addNote(data: unknown): Promise<ActionResult> {
   const session = await requireChampion();
+  if (!session.geographyId) {
+    return { success: false, error: "No geography assigned." };
+  }
   const parsed = addNoteSchema.safeParse(data);
   if (!parsed.success) {
     return { success: false, error: "Invalid input." };
@@ -136,6 +142,9 @@ export async function addNote(data: unknown): Promise<ActionResult> {
 
 export async function setFollowUpDate(data: unknown): Promise<ActionResult> {
   const session = await requireChampion();
+  if (!session.geographyId) {
+    return { success: false, error: "No geography assigned." };
+  }
   const parsed = setFollowUpSchema.safeParse(data);
   if (!parsed.success) {
     const msg =
@@ -177,6 +186,9 @@ export async function setFollowUpDate(data: unknown): Promise<ActionResult> {
 
 export async function createProspect(data: unknown): Promise<ActionResult & { prospectId?: string }> {
   const session = await requireChampion();
+  if (!session.geographyId) {
+    return { success: false, error: "No geography assigned." };
+  }
   const parsed = createProspectSchema.safeParse(data);
   if (!parsed.success) {
     return { success: false, error: "Invalid input." };

@@ -9,6 +9,15 @@ import type { PipelineStage } from "@/lib/constants/pipeline";
 
 export default async function ProspectsPage() {
   const session = await requireChampion();
+
+  if (!session.geographyId) {
+    return (
+      <div className="text-center py-12 text-ink-3">
+        No geography assigned yet. Please contact your administrator.
+      </div>
+    );
+  }
+
   const supabase = await getSupabaseServerClient();
 
   const { data: prospects } = await supabase

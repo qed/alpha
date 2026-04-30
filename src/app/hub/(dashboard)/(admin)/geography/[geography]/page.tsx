@@ -31,7 +31,7 @@ export default async function AdminGeographyDrillDownPage({ params }: Props) {
     return (
       <div className="text-center py-12 text-ink-3">
         Geography not found.{" "}
-        <Link href="/leaderboard" className="text-alpha-blue hover:underline">
+        <Link href="/hub/leaderboard" className="text-alpha-blue hover:underline">
           Back to leaderboard
         </Link>
       </div>
@@ -139,7 +139,7 @@ export default async function AdminGeographyDrillDownPage({ params }: Props) {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
-          href="/leaderboard"
+          href="/hub/leaderboard"
           className="text-sm text-alpha-blue hover:underline no-underline"
         >
           ← Leaderboard

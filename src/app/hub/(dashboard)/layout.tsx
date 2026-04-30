@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+
+export const metadata: Metadata = {
+  title: "Alpha Hub",
+  description:
+    "Enroll your family at Alpha School — the future of education across 53 cities.",
+};
 
 export default async function DashboardLayout({
   children,
@@ -11,7 +18,7 @@ export default async function DashboardLayout({
   const { userId, sessionClaims } = await auth();
 
   if (!userId) {
-    redirect("/sign-in");
+    redirect("/hub/sign-in");
   }
 
   const role = sessionClaims?.role as string | undefined;
@@ -22,21 +29,21 @@ export default async function DashboardLayout({
       <header className="bg-paper border-b border-line px-6 py-3 flex items-center justify-between">
         <nav className="flex items-center gap-6">
           <Link
-            href={isAdmin ? "/leaderboard" : "/dashboard"}
+            href={isAdmin ? "/hub/leaderboard" : "/hub/dashboard"}
             className="font-[family-name:var(--font-display)] text-lg font-bold text-ink no-underline"
           >
-            Alpha Enrollment
+            Alpha Hub
           </Link>
           {isAdmin && (
             <>
               <Link
-                href="/leaderboard"
+                href="/hub/leaderboard"
                 className="text-sm text-ink-3 hover:text-ink no-underline"
               >
                 Leaderboard
               </Link>
               <Link
-                href="/champions"
+                href="/hub/champions"
                 className="text-sm text-ink-3 hover:text-ink no-underline"
               >
                 Champions
@@ -44,7 +51,7 @@ export default async function DashboardLayout({
             </>
           )}
           <Link
-            href={isAdmin ? "/leaderboard" : "/prospects"}
+            href={isAdmin ? "/hub/leaderboard" : "/hub/prospects"}
             className="text-sm text-ink-3 hover:text-ink no-underline"
           >
             {isAdmin ? "All Geographies" : "Prospects"}

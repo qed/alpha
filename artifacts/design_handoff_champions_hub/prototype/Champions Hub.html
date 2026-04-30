@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Champions · Toronto Hub</title>
+<link rel="stylesheet" href="system/colors_and_type.css"/>
+<link rel="stylesheet" href="system/kit.css"/>
+<link rel="stylesheet" href="champion.css?v=2"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="primitives.jsx"></script>
+<script type="text/babel" src="shell.jsx"></script>
+<script type="text/babel" src="dashboard.jsx"></script>
+<script type="text/babel" src="crm.jsx"></script>
+<script type="text/babel" src="library.jsx"></script>
+<script type="text/babel" src="other-screens.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "crmLayout": "table",
+  "libraryLayout": "feed",
+  "creativeMode": "copilot"
+}/*EDITMODE-END*/;
+
+const App = () => {
+  const [page, setPage] = React.useState("dashboard");
+  const [openContactId, setOpenContactId] = React.useState(null);
+  const [sendCtx, setSendCtx] = React.useState(null);
+  const [tweaks, setTweaks] = React.useState(TWEAKS);
+  const [tweaksOpen, setTweaksOpen] = React.useState(false);
+
+  // Tweaks: register listener BEFORE announcing availability
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === "__activate_edit_mode") setTweaksOpen(true);
+      if (e.data?.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", handler);
+    window.parent.postMessage({type: "__edit_mode_available"}, "*");
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
+  const setTweak = (k, v) => {
+    setTweaks(t => ({...t, [k]: v}));
+    window.parent.postMessage({type: "__edit_mode_set_keys", edits: {[k]: v}}, "*");
+  };
+
+  const goToContact = (id) => setOpenContactId(id);
+  const openSend = (contact, item) => {
+    if (!item) {
+      // open a default item if none specified
+      item = LIBRARY[0];
+    }
+    setSendCtx({ contact: contact || null, item });
+  };
+
+  const contact = openContactId ? CONTACTS.find(c => c.id === openContactId) : null;
+
+  const titles = {
+    dashboard: { crumb: `Champion · ${CHAMPION.geo}`, title: `Welcome back, ${CHAMPION.short}.` },
+    crm: { crumb: "Pipeline", title: "All contacts" },
+    library: { crumb: "Library", title: "Talking points & testimonials" },
+    events: { crumb: "Events", title: "Your upcoming events" },
+    page: { crumb: "My Page", title: `alpha.school/toronto/davidreyes` },
+  };
+
+  const actions = {
+    dashboard: <button className="btn-op primary"><Icon.Plus/> Add contact</button>,
+    crm: <>
+      <button className="btn-op sm" onClick={() => setTweak("crmLayout", tweaks.crmLayout === "table" ? "kanban" : "table")}>
+        {tweaks.crmLayout === "table" ? "Kanban" : "Table"} view
+      </button>
+      <button className="btn-op primary"><Icon.Plus/> Add contact</button>
+    </>,
+    library: <button className="btn-op primary"><Icon.Plus/> New entry</button>,
+    events: <button className="btn-op primary"><Icon.Plus/> New event</button>,
+    page: <button className="btn-op primary">Publish</button>,
+  };
+
+  return (
+    <div className="champ-shell" data-screen-label={`${page} screen`}>
+      <Sidebar page={page} setPage={setPage} contactCount={CONTACTS.length}/>
+      <main className="champ-main">
+        <PageBar crumb={titles[page].crumb} title={titles[page].title} actions={actions[page]}/>
+        <div className="page-content">
+          {page === "dashboard" && <Dashboard goToContact={goToContact} setPage={setPage}/>}
+          {page === "crm" && <CRM openContact={goToContact} layout={tweaks.crmLayout}/>}
+          {page === "library" && <Library layout={tweaks.libraryLayout} openSend={openSend}/>}
+          {page === "events" && <Events/>}
+          {page === "page" && <PageBuilder/>}
+        </div>
+      </main>
+
+      {contact && <ContactDrawer contact={contact} onClose={() => setOpenContactId(null)} openSend={openSend}/>}
+      {sendCtx && <SendComposer contact={sendCtx.contact} item={sendCtx.item} onClose={() => setSendCtx(null)}/>}
+
+      {tweaksOpen && (
+        <div className="tweaks-mini">
+          <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12}}>
+            <h4 style={{margin:0}}>Tweaks</h4>
+            <button className="btn-op ghost sm" onClick={() => {
+              setTweaksOpen(false);
+              window.parent.postMessage({type: "__edit_mode_dismissed"}, "*");
+            }}><Icon.X/></button>
+          </div>
+          <div className="grp">
+            <div className="grp-lbl">Pipeline layout</div>
+            <div className="opts">
+              <button className={tweaks.crmLayout === "table" ? "on" : ""} onClick={() => setTweak("crmLayout", "table")}>Table</button>
+              <button className={tweaks.crmLayout === "kanban" ? "on" : ""} onClick={() => setTweak("crmLayout", "kanban")}>Kanban</button>
+            </div>
+          </div>
+          <div className="grp">
+            <div className="grp-lbl">Library layout</div>
+            <div className="opts">
+              <button className={tweaks.libraryLayout === "faceted" ? "on" : ""} onClick={() => setTweak("libraryLayout", "faceted")}>Faceted</button>
+              <button className={tweaks.libraryLayout === "feed" ? "on" : ""} onClick={() => setTweak("libraryLayout", "feed")}>Feed</button>
+            </div>
+          </div>
+          <div className="grp">
+            <div className="grp-lbl">Try views</div>
+            <div className="opts">
+              <button onClick={() => { setPage("crm"); goToContact("c01"); }}>Co-pilot demo</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

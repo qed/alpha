@@ -53,7 +53,7 @@ export default function NewProspectPage() {
     setSubmitting(false);
 
     if (result.success && result.prospectId) {
-      router.push(`/prospects/${result.prospectId}`);
+      router.push(`/hub/prospects/${result.prospectId}`);
     } else {
       setError(result.error || "Failed to create prospect.");
     }
@@ -173,7 +173,7 @@ export default function NewProspectPage() {
           </button>
           <button
             type="button"
-            onClick={() => router.push("/prospects")}
+            onClick={() => router.push("/hub/prospects")}
             className="px-6 py-2 text-ink-3 border border-line rounded-sm hover:bg-paper-2"
           >
             Cancel

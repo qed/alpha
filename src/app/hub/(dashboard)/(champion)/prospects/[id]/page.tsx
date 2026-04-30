@@ -28,7 +28,7 @@ export default async function ProspectDetailPage({ params }: Props) {
     return (
       <div className="text-center py-12 text-ink-3">
         Prospect not found.{" "}
-        <Link href="/prospects" className="text-alpha-blue hover:underline">
+        <Link href="/hub/prospects" className="text-alpha-blue hover:underline">
           Back to prospects
         </Link>
       </div>
@@ -86,7 +86,7 @@ export default async function ProspectDetailPage({ params }: Props) {
   return (
     <div className="space-y-4">
       <Link
-        href="/prospects"
+        href="/hub/prospects"
         className="text-sm text-alpha-blue hover:underline no-underline"
       >
         ← Back to prospects

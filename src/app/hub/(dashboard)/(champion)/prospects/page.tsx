@@ -35,7 +35,7 @@ export default async function ProspectsPage() {
           Prospects
         </h1>
         <Link
-          href="/prospects/new"
+          href="/hub/prospects/new"
           className="px-4 py-2 text-sm font-medium bg-alpha-blue text-white rounded-sm hover:bg-alpha-blue-600 no-underline"
         >
           + Add Prospect

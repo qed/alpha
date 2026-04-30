@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 const mockAuth = vi.fn();
-const mockRedirect = vi.fn();
 
 vi.mock("@clerk/nextjs/server", () => ({
   auth: () => mockAuth(),
@@ -10,15 +9,26 @@ vi.mock("@clerk/nextjs/server", () => ({
 
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
-    mockRedirect(url);
     throw new Error(`NEXT_REDIRECT:${url}`);
   },
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+  }),
+  usePathname: () => "/hub",
 }));
 
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => {
     const { fill, priority, ...rest } = props;
-    return <img {...rest} data-fill={fill ? "true" : undefined} data-priority={priority ? "true" : undefined} />;
+    return (
+      <img
+        {...rest}
+        data-fill={fill ? "true" : undefined}
+        data-priority={priority ? "true" : undefined}
+      />
+    );
   },
 }));
 
@@ -44,23 +54,23 @@ describe("HubPage", () => {
       mockAuth.mockResolvedValue({ userId: null, sessionClaims: null });
     });
 
-    it("renders the welcome page with hero heading", async () => {
+    it("renders the intro page with hero heading", async () => {
+      const page = await HubPage();
+      render(page);
+      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
+    });
+
+    it("renders the tagline", async () => {
       const page = await HubPage();
       render(page);
       expect(
-        screen.getByText("Alpha Parents Hub.", { exact: false })
+        screen.getByText(
+          "Tools and resources to champion Alpha School in your community."
+        )
       ).toBeInTheDocument();
     });
 
-    it("renders the value proposition section", async () => {
-      const page = await HubPage();
-      render(page);
-      expect(
-        screen.getByText("You believe in Alpha School")
-      ).toBeInTheDocument();
-    });
-
-    it("renders three tool preview cards", async () => {
+    it("renders three tool preview cards linking to library", async () => {
       const page = await HubPage();
       render(page);
       expect(screen.getByText("FAQ Library")).toBeInTheDocument();
@@ -70,61 +80,83 @@ describe("HubPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders the leader framing section", async () => {
+    it("renders the CTA with Enter the Hub for unauthenticated", async () => {
       const page = await HubPage();
       render(page);
-      expect(
-        screen.getByText("Become a champion for your community")
-      ).toBeInTheDocument();
+      const cta = screen.getByText("Enter the Hub");
+      expect(cta.closest("a")).toHaveAttribute("href", "/hub/sign-in");
     });
 
-    it("renders Enter the Hub CTAs linking to /hub/sign-in", async () => {
+    it("renders the sidebar with nav items", async () => {
       const page = await HubPage();
       render(page);
-      const ctas = screen.getAllByText("Enter the Hub");
-      expect(ctas.length).toBeGreaterThanOrEqual(2);
-      for (const cta of ctas) {
-        expect(cta.closest("a")).toHaveAttribute("href", "/hub/sign-in");
-      }
+      expect(screen.getByText("Intro")).toBeInTheDocument();
+      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("Pipeline")).toBeInTheDocument();
+      expect(screen.getByText("Library")).toBeInTheDocument();
+      expect(screen.getByText("Events")).toBeInTheDocument();
+      expect(screen.getByText("My Page")).toBeInTheDocument();
     });
 
-    it("renders the PublicNavbar", async () => {
+    it("renders the Alpha Toronto callout in welcome content", async () => {
       const page = await HubPage();
       render(page);
-      expect(screen.getByText("Parents Hub")).toBeInTheDocument();
-      expect(screen.getByText("The Hub")).toBeInTheDocument();
+      const links = screen.getAllByText("alphatoronto.org");
+      expect(links.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("renders the short CTA (10 words or fewer)", async () => {
+      const page = await HubPage();
+      render(page);
+      const cta = screen.getByText("Ready? Start championing Alpha.");
+      const words = cta.textContent!.split(/\s+/).filter(Boolean);
+      expect(words.length).toBeLessThanOrEqual(10);
     });
   });
 
-  describe("authenticated users", () => {
-    it("redirects admin to /hub/leaderboard", async () => {
-      mockAuth.mockResolvedValue({
-        userId: "user_admin",
-        sessionClaims: { role: "admin" },
-      });
-
-      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockRedirect).toHaveBeenCalledWith("/hub/leaderboard");
-    });
-
-    it("redirects champion to /hub/dashboard", async () => {
+  describe("authenticated champion", () => {
+    beforeEach(() => {
       mockAuth.mockResolvedValue({
         userId: "user_champion",
         sessionClaims: { role: "champion" },
       });
-
-      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockRedirect).toHaveBeenCalledWith("/hub/dashboard");
     });
 
-    it("redirects user with no role to /hub/dashboard (defaults to champion)", async () => {
-      mockAuth.mockResolvedValue({
-        userId: "user_norole",
-        sessionClaims: {},
-      });
+    it("renders the intro page (no redirect to dashboard)", async () => {
+      const page = await HubPage();
+      render(page);
+      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
+    });
 
-      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT");
-      expect(mockRedirect).toHaveBeenCalledWith("/hub/dashboard");
+    it("renders Go to Dashboard CTA for authenticated users", async () => {
+      const page = await HubPage();
+      render(page);
+      const cta = screen.getByText("Go to Dashboard");
+      expect(cta.closest("a")).toHaveAttribute("href", "/hub/dashboard");
+    });
+  });
+
+  describe("authenticated admin", () => {
+    it("renders the intro page (no redirect to leaderboard)", async () => {
+      mockAuth.mockResolvedValue({
+        userId: "user_admin",
+        sessionClaims: { role: "admin" },
+      });
+      const page = await HubPage();
+      render(page);
+      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
+    });
+  });
+
+  describe("authenticated user with no geography", () => {
+    it("renders the intro page without errors", async () => {
+      mockAuth.mockResolvedValue({
+        userId: "user_nogeo",
+        sessionClaims: { role: "champion" },
+      });
+      const page = await HubPage();
+      render(page);
+      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
     });
   });
 });

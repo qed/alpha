@@ -37,42 +37,52 @@ export default async function HubPage() {
             </p>
           </div>
 
-          {/* Tool preview cards */}
-          <div className="grid gap-4 sm:grid-cols-3 mt-6">
-            <Link
-              href="/hub/library"
-              className="bg-white/10 backdrop-blur-sm rounded-lg px-5 py-5 border border-white/15 hover:bg-white/[0.16] transition-colors no-underline"
-            >
-              <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-white">
-                FAQ Library
-              </h3>
-              <p className="text-[13px] leading-[1.5] text-white/65">
-                Ready-made answers to the questions parents ask most.
-              </p>
-            </Link>
-            <Link
-              href="/hub/library"
-              className="bg-white/10 backdrop-blur-sm rounded-lg px-5 py-5 border border-white/15 hover:bg-white/[0.16] transition-colors no-underline"
-            >
-              <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-white">
-                Parent Testimonials
-              </h3>
-              <p className="text-[13px] leading-[1.5] text-white/65">
-                Real stories from Alpha families to share with prospective
-                parents.
-              </p>
-            </Link>
-            <Link
-              href="/hub/library"
-              className="bg-white/10 backdrop-blur-sm rounded-lg px-5 py-5 border border-white/15 hover:bg-white/[0.16] transition-colors no-underline"
-            >
-              <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-white">
-                &ldquo;Why Alpha&rdquo; Talking Points
-              </h3>
-              <p className="text-[13px] leading-[1.5] text-white/65">
-                Key points so you can speak confidently to any parent.
-              </p>
-            </Link>
+        </div>
+      </section>
+
+      {/* Resources */}
+      <section className="px-8 py-16 max-sm:px-5 max-sm:py-10">
+        <div className="max-w-[600px] mx-auto">
+          <div className="bg-paper-3 rounded-xl px-10 py-9 max-sm:px-6 max-sm:py-7">
+            <h2 className="font-[family-name:var(--font-display)] font-extrabold text-[24px] tracking-[-0.025em] mb-6 text-ink text-center">
+              Resources
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Link
+                href="/hub/library"
+                className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
+              >
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">
+                  FAQ Library
+                </h3>
+                <p className="text-[13px] leading-[1.5] text-ink-3">
+                  Ready-made answers to the questions parents ask most.
+                </p>
+              </Link>
+              <Link
+                href="/hub/library"
+                className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
+              >
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">
+                  Parent Testimonials
+                </h3>
+                <p className="text-[13px] leading-[1.5] text-ink-3">
+                  Real stories from Alpha families to share with prospective
+                  parents.
+                </p>
+              </Link>
+              <Link
+                href="/hub/library"
+                className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
+              >
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">
+                  &ldquo;Why Alpha&rdquo; Talking Points
+                </h3>
+                <p className="text-[13px] leading-[1.5] text-ink-3">
+                  Key points so you can speak confidently to any parent.
+                </p>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

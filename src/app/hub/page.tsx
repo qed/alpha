@@ -108,22 +108,6 @@ export default async function HubPage() {
         </div>
       </section>
 
-      {/* Alpha Toronto callout */}
-      <section className="px-8 pb-6 max-sm:px-5 max-sm:pb-4">
-        <div className="max-w-[600px] mx-auto text-center">
-          <p className="text-sm text-ink-4">
-            Built by Alpha Toronto. Know someone in Toronto?{" "}
-            <a
-              href="https://alphatoronto.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-alpha-blue underline underline-offset-2 hover:text-alpha-blue-600 transition-colors"
-            >
-              alphatoronto.org
-            </a>
-          </p>
-        </div>
-      </section>
     </HubShell>
   );
 }

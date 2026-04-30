@@ -1,4 +1,4 @@
-import { requireChampion } from "@/lib/auth";
+import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { PIPELINE_STAGES, type PipelineStage } from "@/lib/constants/pipeline";
 import { PipelineSummary } from "@/components/dashboard/pipeline-summary";
@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { CopyLinkButton } from "@/components/dashboard/copy-link-button";
 
 export default async function ChampionDashboardPage() {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
 
   if (!session.geographyId) {
     return (

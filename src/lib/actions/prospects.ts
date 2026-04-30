@@ -1,6 +1,6 @@
 "use server";
 
-import { requireChampion, requireAdmin } from "@/lib/auth";
+import { requireAuthenticated, requireAdmin } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   isValidTransition,
@@ -22,7 +22,7 @@ interface ActionResult {
 export async function updateProspectStatus(
   data: unknown
 ): Promise<ActionResult> {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
   if (!session.geographyId) {
     return { success: false, error: "No geography assigned." };
   }
@@ -96,7 +96,7 @@ export async function updateProspectStatus(
 }
 
 export async function addNote(data: unknown): Promise<ActionResult> {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
   if (!session.geographyId) {
     return { success: false, error: "No geography assigned." };
   }
@@ -141,7 +141,7 @@ export async function addNote(data: unknown): Promise<ActionResult> {
 }
 
 export async function setFollowUpDate(data: unknown): Promise<ActionResult> {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
   if (!session.geographyId) {
     return { success: false, error: "No geography assigned." };
   }
@@ -185,7 +185,7 @@ export async function setFollowUpDate(data: unknown): Promise<ActionResult> {
 }
 
 export async function createProspect(data: unknown): Promise<ActionResult & { prospectId?: string }> {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
   if (!session.geographyId) {
     return { success: false, error: "No geography assigned." };
   }
@@ -241,7 +241,7 @@ export async function createProspect(data: unknown): Promise<ActionResult & { pr
   return { success: true, prospectId: prospect.id };
 }
 
-export async function checkAutoPromotion(
+async function checkAutoPromotion(
   geographyId: string,
   actorId: string
 ): Promise<void> {

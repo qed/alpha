@@ -32,7 +32,6 @@ export async function requireAdmin(): Promise<SessionInfo> {
   return session;
 }
 
-export async function requireChampion(): Promise<SessionInfo> {
-  const session = await requireAuth();
-  return session;
+export async function requireAuthenticated(): Promise<SessionInfo> {
+  return requireAuth();
 }

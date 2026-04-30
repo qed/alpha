@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireChampion } from "@/lib/auth";
+import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   ProspectDetail,
@@ -13,7 +13,7 @@ interface Props {
 
 export default async function ProspectDetailPage({ params }: Props) {
   const { id } = await params;
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
 
   if (!session.geographyId) {
     return (

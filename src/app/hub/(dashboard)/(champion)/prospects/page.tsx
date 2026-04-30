@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireChampion } from "@/lib/auth";
+import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   ProspectTable,
@@ -8,7 +8,7 @@ import {
 import type { PipelineStage } from "@/lib/constants/pipeline";
 
 export default async function ProspectsPage() {
-  const session = await requireChampion();
+  const session = await requireAuthenticated();
 
   if (!session.geographyId) {
     return (

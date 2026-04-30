@@ -53,7 +53,7 @@ Two independent config changes were required:
 
 Delete `middleware.ts` entirely. Auth was already enforced at:
 - Dashboard layout calling `auth.protect()` and redirecting unauthenticated users
-- Individual pages calling `requireAdmin()` or `requireChampion()` for role-based access
+- Individual pages calling `requireAdmin()` or `requireAuthenticated()` for role-based access
 
 The role-based redirects middleware performed (blocking champions from `/leaderboard`, `/geography/*`, `/champions`) are replicated in those pages' server components.
 

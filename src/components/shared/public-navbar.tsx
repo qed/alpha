@@ -20,14 +20,12 @@ export function PublicNavbar() {
           </div>
         </Link>
         <div className="ml-auto flex gap-3 items-center">
-          <a
-            href="/artifacts/alpha-report-card.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/hub"
             className="text-sm font-medium text-ink-2 no-underline"
           >
-            The Academics
-          </a>
+            The Hub
+          </Link>
           <a
             className="font-[family-name:var(--font-display)] font-bold text-[11px] tracking-[.08em] uppercase bg-alpha-blue text-white shadow-blue rounded-full px-7 py-[9px] no-underline inline-flex items-center hover:bg-alpha-blue-600 hover:-translate-y-px transition-all duration-150"
             href="https://community.alpha.school/?ref=UFB2FW8LX"

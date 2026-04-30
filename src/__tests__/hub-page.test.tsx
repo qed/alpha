@@ -90,7 +90,7 @@ describe("HubPage", () => {
       const page = await HubPage();
       render(page);
       expect(screen.getByText("Parents Hub")).toBeInTheDocument();
-      expect(screen.getByText("The Academics")).toBeInTheDocument();
+      expect(screen.getByText("The Hub")).toBeInTheDocument();
     });
   });
 

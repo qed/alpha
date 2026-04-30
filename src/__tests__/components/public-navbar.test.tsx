@@ -15,11 +15,10 @@ describe("PublicNavbar", () => {
     expect(screen.getByText("Parents Hub")).toBeInTheDocument();
   });
 
-  it("renders The Academics link pointing to the report card PDF", () => {
+  it("renders The Hub link pointing to /hub", () => {
     render(<PublicNavbar />);
-    const link = screen.getByText("The Academics");
-    expect(link).toHaveAttribute("href", "/artifacts/alpha-report-card.pdf");
-    expect(link).toHaveAttribute("target", "_blank");
+    const link = screen.getByText("The Hub");
+    expect(link).toHaveAttribute("href", "/hub");
   });
 
   it("renders Join the Community link pointing to community.alpha.school", () => {

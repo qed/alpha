@@ -1,23 +1,23 @@
-import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
+import { HubShell } from "@/components/hub/hub-shell";
+import { LibraryAccordion } from "@/components/hub/library-accordion";
 
-export default function LibraryPage() {
+export default async function LibraryPage() {
+  const { userId } = await auth();
+  const isAuthenticated = !!userId;
+
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-6">
-      <div className="text-center max-w-md">
-        <h1 className="font-[family-name:var(--font-display)] font-extrabold text-[28px] tracking-[-0.025em] mb-3 text-ink">
+    <HubShell isAuthenticated={isAuthenticated}>
+      <div className="max-w-[920px] mx-auto px-8 py-10 max-sm:px-5 max-sm:py-8">
+        <h1 className="font-[family-name:var(--font-display)] font-extrabold text-[clamp(24px,5vw,36px)] leading-[1.1] tracking-[-0.03em] mb-2 text-ink">
           Library
         </h1>
-        <p className="text-lg leading-[1.6] text-ink-3 mb-8">
-          Reference materials for championing Alpha School are coming soon.
-          FAQs, testimonials, and talking points — all in one place.
+        <p className="text-[15px] leading-[1.6] text-ink-3 mb-8">
+          Reference materials for championing Alpha School — FAQs, parent
+          testimonials, and talking points all in one place.
         </p>
-        <Link
-          href="/hub"
-          className="font-[family-name:var(--font-display)] font-bold text-[14px] tracking-[.06em] uppercase text-alpha-blue hover:text-alpha-blue-600 transition-colors"
-        >
-          &larr; Back to the Hub
-        </Link>
+        <LibraryAccordion />
       </div>
-    </div>
+    </HubShell>
   );
 }

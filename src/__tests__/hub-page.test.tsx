@@ -70,14 +70,23 @@ describe("HubPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders three tool preview cards linking to library", async () => {
+    it("renders three tool preview cards linking to library with fragment URLs", async () => {
       const page = await HubPage();
       render(page);
-      expect(screen.getByText("FAQ Library")).toBeInTheDocument();
-      expect(screen.getByText("Parent Testimonials")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Why Alpha.*Talking Points/i)
-      ).toBeInTheDocument();
+      const faq = screen.getByText("FAQ Library");
+      expect(faq.closest("a")).toHaveAttribute("href", "/hub/library#faq");
+
+      const testimonials = screen.getByText("Parent Testimonials");
+      expect(testimonials.closest("a")).toHaveAttribute(
+        "href",
+        "/hub/library#testimonials"
+      );
+
+      const talkingPoints = screen.getByText(/Why Alpha.*Talking Points/i);
+      expect(talkingPoints.closest("a")).toHaveAttribute(
+        "href",
+        "/hub/library#talking-points"
+      );
     });
 
     it("renders the CTA with Enter the Hub for unauthenticated", async () => {

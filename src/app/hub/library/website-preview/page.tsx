@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Sora, DM_Sans } from "next/font/google";
 import { Navbar } from "./_components/navbar";
 import { HeroSection } from "./_components/hero-section";
-import { FormScreenshotSection } from "./_components/form-screenshot-section";
+import { EventsStandaloneSection } from "./_components/form-screenshot-section";
 import { ProgressSection } from "./_components/progress-section";
 import { AlphaModelSection } from "./_components/alpha-model-section";
 import { VideoSection } from "./_components/video-section";
@@ -39,10 +39,10 @@ export default function WebsitePreviewPage() {
       <Navbar />
       <main>
         <HeroSection />
+        <EventsStandaloneSection />
         <ProgressSection />
         <AlphaModelSection />
         <VideoSection />
-        <FormScreenshotSection />
         <DailyScheduleSection />
         <EnrollmentSection />
         <ComingSoonSection />

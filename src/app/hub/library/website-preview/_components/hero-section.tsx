@@ -11,7 +11,8 @@ export function HeroSection() {
             Alpha is a revolutionary K-8 school where students master core
             academics in ~2 hours per day through AI-powered, personalized
             learning, then spend the rest of the day on life skills,
-            entrepreneurship, wellness, and real-world experiences.
+            entrepreneurship, wellness, real-world experiences, and becoming
+            the best version of themselves.
           </p>
           <div className="wp-hero-stats">
             <div className="wp-hero-stat">
@@ -29,23 +30,41 @@ export function HeroSection() {
           </div>
         </div>
         <div>
-          <EventsCard />
+          <FormCard />
         </div>
       </div>
     </section>
   );
 }
 
-function EventsCard() {
+function FormCard() {
   return (
     <div className="wp-events-card">
-      <div className="wp-events-card-header">
-        <h3 className="wp-events-heading">Upcoming Events</h3>
-        <div className="wp-events-subheading">This Week</div>
+      <h3 className="wp-events-heading">Express Your Interest</h3>
+      <div className="wp-form-placeholder-fields">
+        <div className="wp-form-placeholder-row">
+          <div className="wp-form-placeholder-field">
+            <span className="wp-form-placeholder-label">First name</span>
+            <div className="wp-form-placeholder-input" />
+          </div>
+          <div className="wp-form-placeholder-field">
+            <span className="wp-form-placeholder-label">Last name</span>
+            <div className="wp-form-placeholder-input" />
+          </div>
+        </div>
+        <div className="wp-form-placeholder-field">
+          <span className="wp-form-placeholder-label">Email</span>
+          <div className="wp-form-placeholder-input" />
+        </div>
+        <div className="wp-form-placeholder-field">
+          <span className="wp-form-placeholder-label">Phone number</span>
+          <div className="wp-form-placeholder-input" />
+        </div>
+        <div className="wp-form-placeholder-btn">Submit</div>
       </div>
-      <div className="wp-events-placeholder">
-        View all in Community Portal
-      </div>
+      <p className="wp-form-placeholder-note">
+        This is a non-interactive preview of the enrollment form.
+      </p>
     </div>
   );
 }

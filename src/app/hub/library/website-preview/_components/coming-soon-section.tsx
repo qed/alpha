@@ -1,9 +1,9 @@
 const SAT_SCORES = [
-  { label: "Overall", score: "1410" },
-  { label: "Class of 2025", score: "1530" },
-  { label: "Class of 2026", score: "1420" },
-  { label: "Class of 2027", score: "1400" },
-  { label: "Class of 2028", score: "1350" },
+  { label: "Overall School Average", score: "1410" },
+  { label: "Class of 2025 (Seniors)", score: "1530" },
+  { label: "Class of 2026 (Juniors)", score: "1420" },
+  { label: "Class of 2027 (Sophomores)", score: "1400" },
+  { label: "Class of 2028 (Freshmen)", score: "1350" },
 ];
 
 export function ComingSoonSection() {
@@ -11,39 +11,42 @@ export function ComingSoonSection() {
     <section className="wp-coming-soon">
       <div className="wp-coming-soon-inner">
         <div>
-          <div className="wp-eyebrow" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Coming Soon
-          </div>
+          <div className="wp-coming-soon-eyebrow">Coming Soon</div>
           <h2 className="wp-coming-soon-heading">Alpha High School</h2>
           <p className="wp-coming-soon-text">
-            Opening Fall 2027. The same revolutionary model, extended through
-            high school. Preparing students not just for college, but for life.
+            Our K&ndash;8 campus is just the beginning. We&rsquo;re planning to
+            open <strong>Alpha High School</strong> in{" "}
+            <strong>Fall 2027</strong> &mdash; extending the same
+            transformative Alpha model through 12th grade.
+          </p>
+          <p className="wp-coming-soon-text">
+            Alpha High School graduates have gone on to selective universities,
+            launched businesses, and entered the workforce with the skills,
+            confidence, and self-knowledge that most adults spend years trying to
+            develop. More details on our high school program will be shared with
+            enrolled K&ndash;8 families first.
           </p>
         </div>
-        <div>
-          <h3
-            className="wp-coming-soon-heading"
-            style={{ fontSize: "22px", marginBottom: "20px" }}
-          >
-            SAT Scores (Dec 2024)
-          </h3>
+        <div className="wp-sat-container">
+          <div className="wp-sat-header">
+            SAT Scores &mdash; December 2024
+          </div>
           <table className="wp-sat-table">
-            <thead>
-              <tr>
-                <th>Class</th>
-                <th>Score</th>
-              </tr>
-            </thead>
             <tbody>
               {SAT_SCORES.map((row) => (
                 <tr key={row.label}>
                   <td>{row.label}</td>
-                  <td>{row.score}</td>
+                  <td className="wp-sat-score">{row.score}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="wp-sat-badge">94th Percentile Nationally</div>
+          <div className="wp-sat-footer">
+            <span className="wp-sat-badge">94th Percentile Nationally</span>
+            <span className="wp-sat-sub-badge">
+              National avg: 1024 &middot; vs. 978 TX avg
+            </span>
+          </div>
         </div>
       </div>
     </section>

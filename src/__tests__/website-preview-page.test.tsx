@@ -28,10 +28,13 @@ describe("WebsitePreviewPage", () => {
   });
 
   describe("navbar", () => {
-    it("shows Alpha Local City brand", () => {
+    it("shows Local City brand with logo", () => {
       render(<WebsitePreviewPage />);
       const navText = document.querySelector(".wp-nav-text");
-      expect(navText?.textContent).toBe("Alpha Local City");
+      expect(navText?.textContent).toBe("Local City");
+      const logo = document.querySelector(".wp-nav-logo") as HTMLImageElement;
+      expect(logo?.tagName).toBe("IMG");
+      expect(logo?.alt).toBe("Alpha");
     });
 
     it("has Join the Discussion link", () => {
@@ -43,10 +46,12 @@ describe("WebsitePreviewPage", () => {
   });
 
   describe("footer", () => {
-    it("shows Alpha Local City name", () => {
+    it("shows Local City name with logo", () => {
       render(<WebsitePreviewPage />);
       const footerName = document.querySelector(".wp-footer-name");
-      expect(footerName?.textContent).toBe("Alpha Local City");
+      expect(footerName?.textContent).toBe("Local City");
+      const logo = document.querySelector(".wp-footer-logo") as HTMLImageElement;
+      expect(logo?.tagName).toBe("IMG");
     });
 
     it("shows alphalocalcity.org URL", () => {
@@ -74,16 +79,30 @@ describe("WebsitePreviewPage", () => {
     });
   });
 
-  describe("events section", () => {
-    it("shows portal text instead of individual events", () => {
+  describe("events bar", () => {
+    it("shows upcoming events label and portal CTA", () => {
       render(<WebsitePreviewPage />);
+      expect(screen.getByText("Upcoming Events")).toBeInTheDocument();
       expect(
-        screen.getByText("View all in Community Portal")
+        screen.getByText("View in Community Portal")
       ).toBeInTheDocument();
+    });
+
+    it("renders CTA as a blue pill link", () => {
+      render(<WebsitePreviewPage />);
+      const cta = document.querySelector(".wp-events-bar-cta");
+      expect(cta).toBeTruthy();
+      expect(cta?.tagName).toBe("A");
     });
   });
 
   describe("progress tracker", () => {
+    it("renders heading and eyebrow", () => {
+      render(<WebsitePreviewPage />);
+      expect(screen.getByText("Where We Are")).toBeInTheDocument();
+      expect(screen.getByText("Our Progress")).toBeInTheDocument();
+    });
+
     it("renders 4 milestones", () => {
       render(<WebsitePreviewPage />);
       expect(
@@ -108,6 +127,19 @@ describe("WebsitePreviewPage", () => {
   });
 
   describe("alpha model", () => {
+    it("renders eyebrow, heading and subtitle", () => {
+      render(<WebsitePreviewPage />);
+      expect(screen.getByText("The Alpha Model")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "A completely different approach to education"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/personalized AI-powered learning combined with real-world skill development/)
+      ).toBeInTheDocument();
+    });
+
     it("renders 4 feature cards", () => {
       render(<WebsitePreviewPage />);
       expect(
@@ -145,6 +177,21 @@ describe("WebsitePreviewPage", () => {
   });
 
   describe("daily schedule", () => {
+    it("renders eyebrow, heading and subtitle", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText("The Daily Experience")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "What does a day at Alpha actually look like?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/maximize learning, growth, and joy/)
+      ).toBeInTheDocument();
+    });
+
     it("renders 4 time blocks", () => {
       render(<WebsitePreviewPage />);
       expect(screen.getByText("Limitless Launch")).toBeInTheDocument();
@@ -159,10 +206,22 @@ describe("WebsitePreviewPage", () => {
   });
 
   describe("enrollment info", () => {
+    it("renders eyebrow, heading and subtitle", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText("Practical details for families")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/more details coming as we approach opening/)
+      ).toBeInTheDocument();
+    });
+
     it("renders 4 cards with correct values", () => {
       render(<WebsitePreviewPage />);
       expect(screen.getByText("Grades Served")).toBeInTheDocument();
-      expect(screen.getByText("8:45 AM - 3:30 PM")).toBeInTheDocument();
+      expect(
+        screen.getByText(/8:45 AM/)
+      ).toBeInTheDocument();
       expect(screen.getByText("Fall 2026")).toBeInTheDocument();
     });
 
@@ -170,31 +229,75 @@ describe("WebsitePreviewPage", () => {
       render(<WebsitePreviewPage />);
       expect(
         screen.getByText(
-          "Details shared with committed local families first"
+          /committed families first/
         )
       ).toBeInTheDocument();
     });
   });
 
   describe("coming soon / high school", () => {
-    it("says Alpha High School without Los Angeles", () => {
+    it("renders eyebrow and heading without Los Angeles", () => {
       render(<WebsitePreviewPage />);
-      expect(screen.getByText("Alpha High School")).toBeInTheDocument();
+      expect(screen.getByText("Coming Soon")).toBeInTheDocument();
+      const heading = document.querySelector(".wp-coming-soon-heading");
+      expect(heading?.textContent).toBe("Alpha High School");
     });
 
-    it("shows SAT score badge", () => {
+    it("renders both description paragraphs", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText(/extending the same transformative Alpha model/)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/launched businesses/)
+      ).toBeInTheDocument();
+    });
+
+    it("shows SAT score badge and sub-badge", () => {
       render(<WebsitePreviewPage />);
       expect(
         screen.getByText("94th Percentile Nationally")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/National avg: 1024/)
+      ).toBeInTheDocument();
+    });
+
+    it("shows detailed SAT score rows", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText("Overall School Average")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Class of 2025 (Seniors)")
       ).toBeInTheDocument();
     });
   });
 
   describe("interest chart", () => {
-    it("renders with genericized labels", () => {
+    it("renders eyebrow, heading and subtitle", () => {
       render(<WebsitePreviewPage />);
-      expect(screen.getByText("Alpha Example City")).toBeInTheDocument();
-      expect(screen.getByText("from local families")).toBeInTheDocument();
+      expect(screen.getByText("Current Interest")).toBeInTheDocument();
+      expect(
+        screen.getByText("Families Already Raising Their Hands")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/where local families stand today/)
+      ).toBeInTheDocument();
+    });
+
+    it("renders chart with genericized labels", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText(/Alpha Example City/)
+      ).toBeInTheDocument();
+    });
+
+    it("renders disclaimer", () => {
+      render(<WebsitePreviewPage />);
+      expect(
+        screen.getByText(/not formal commitments/)
+      ).toBeInTheDocument();
     });
   });
 

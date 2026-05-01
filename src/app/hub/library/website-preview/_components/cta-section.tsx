@@ -4,6 +4,10 @@ export function CtaSection() {
       <h2 className="wp-cta-heading">
         Ready to be part of something different?
       </h2>
+      <p className="wp-cta-subtitle">
+        Join the discussion with other local families who are committing to a
+        different kind of education.
+      </p>
       <a
         href="https://community.alpha.school"
         target="_blank"

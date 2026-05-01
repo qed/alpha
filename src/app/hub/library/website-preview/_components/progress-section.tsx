@@ -8,6 +8,10 @@ const MILESTONES = [
 export function ProgressSection() {
   return (
     <section className="wp-progress">
+      <div className="wp-progress-header">
+        <div className="wp-progress-eyebrow">Where We Are</div>
+        <h2 className="wp-progress-heading">Our Progress</h2>
+      </div>
       <div className="wp-progress-inner">
         <div className="wp-progress-line">
           <div className="wp-progress-line-fill" />

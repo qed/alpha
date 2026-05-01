@@ -3,8 +3,12 @@ export function Navbar() {
     <nav className="wp-nav">
       <div className="wp-nav-inner">
         <div className="wp-nav-brand">
-          <div className="wp-nav-logo">A</div>
-          <span className="wp-nav-text">Alpha Local City</span>
+          <img
+            src="/artifacts/Alpha Logo.png"
+            alt="Alpha"
+            className="wp-nav-logo"
+          />
+          <span className="wp-nav-text">Local City</span>
         </div>
         <a
           href="https://community.alpha.school"

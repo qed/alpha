@@ -86,13 +86,22 @@ describe("LibraryAccordion", () => {
   });
 
   describe("accordion behavior", () => {
-    it("renders all 3 accordion items with correct labels", () => {
+    it("renders all 4 accordion items with correct labels", () => {
       render(<LibraryAccordion />);
       expect(screen.getByText("FAQ Library")).toBeInTheDocument();
       expect(screen.getByText("Parent Testimonials")).toBeInTheDocument();
       expect(
         screen.getByText("“Why Alpha” Talking Points")
       ).toBeInTheDocument();
+      expect(screen.getByText("A full Alpha website")).toBeInTheDocument();
+    });
+
+    it("renders website item as a link opening in new tab", () => {
+      render(<LibraryAccordion />);
+      const link = screen.getByText("A full Alpha website").closest("a");
+      expect(link).toHaveAttribute("href", "/hub/library/website-preview");
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
 
     it("starts with all items collapsed", () => {

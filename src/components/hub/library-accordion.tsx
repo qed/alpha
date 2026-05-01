@@ -29,15 +29,26 @@ const VIDEOS: { youtubeId: string; title: string; thumbnail?: string }[] = [
   { youtubeId: "JU_XIXU-cuE", title: "The Real Reason These Kids Love Going to School" },
 ];
 
-const SECTIONS = [
+const SECTIONS: readonly {
+  id: string;
+  label: string;
+  href?: string;
+}[] = [
   { id: "faq", label: "FAQ Library" },
   { id: "testimonials", label: "Parent Testimonials" },
   { id: "talking-points", label: "“Why Alpha” Talking Points" },
-] as const;
+  {
+    id: "website",
+    label: "A full Alpha website",
+    href: "/hub/library/website-preview",
+  },
+];
 
-type SectionId = (typeof SECTIONS)[number]["id"];
+type SectionId = "faq" | "testimonials" | "talking-points";
 
-const VALID_IDS = new Set<string>(SECTIONS.map((s) => s.id));
+const VALID_IDS = new Set<string>(
+  SECTIONS.filter((s) => !s.href).map((s) => s.id)
+);
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -279,12 +290,42 @@ export function LibraryAccordion() {
   return (
     <div className="border border-line rounded-xl overflow-hidden divide-y divide-line">
       {SECTIONS.map((section) => {
+        if (section.href) {
+          return (
+            <div key={section.id}>
+              <a
+                href={section.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer hover:bg-paper-2 transition-colors duration-100"
+              >
+                <span className="font-[family-name:var(--font-display)] font-bold text-[16px] tracking-[-0.01em] text-ink">
+                  {section.label}
+                </span>
+                <svg
+                  className="w-5 h-5 shrink-0 text-ink-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+          );
+        }
+
         const isOpen = active === section.id;
         return (
           <div key={section.id} id={section.id}>
             <button
               type="button"
-              onClick={() => toggle(section.id)}
+              onClick={() => toggle(section.id as SectionId)}
               aria-expanded={isOpen}
               className="w-full flex items-center justify-between px-6 py-4 text-left cursor-pointer hover:bg-paper-2 transition-colors duration-100"
             >

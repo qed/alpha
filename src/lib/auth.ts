@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export interface SessionInfo {
   userId: string;
@@ -8,16 +9,21 @@ export interface SessionInfo {
 }
 
 export async function requireAuth(): Promise<SessionInfo> {
-  const { userId, sessionClaims } = await auth();
+  const { userId } = await auth();
 
   if (!userId) {
     redirect("/hub");
   }
 
-  const rawRole = sessionClaims?.role as string | undefined;
-  const role = rawRole === "admin" ? "admin" : "champion";
-  const rawGeo = sessionClaims?.geography_id as string | undefined;
-  const geographyId = rawGeo && !rawGeo.startsWith("{{") ? rawGeo : null;
+  const supabase = getSupabaseAdminClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, geography_id")
+    .eq("clerk_user_id", userId)
+    .maybeSingle();
+
+  const role = profile?.role === "admin" ? "admin" : "champion";
+  const geographyId = profile?.geography_id ?? null;
 
   return { userId, role, geographyId };
 }

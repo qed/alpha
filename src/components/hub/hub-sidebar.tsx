@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useClerk } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -81,6 +82,7 @@ interface HubSidebarProps {
 }
 
 export function HubSidebar({ isAuthenticated, isOpen, onClose }: HubSidebarProps) {
+  const { signOut } = useClerk();
   const router = useRouter();
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLElement>(null);
@@ -246,6 +248,22 @@ export function HubSidebar({ isAuthenticated, isOpen, onClose }: HubSidebarProps
           </svg>
           <span className="text-white/50 italic text-xs">Set after sign-in</span>
         </div>
+
+        {/* Sign out */}
+        {isAuthenticated && (
+          <button
+            type="button"
+            onClick={() => signOut({ redirectUrl: "/hub" })}
+            className="flex items-center gap-3 px-5 py-2 text-[13px] font-medium text-white/60 border-l-2 border-l-transparent hover:text-white hover:bg-white/[0.04] transition-all duration-[120ms] w-full text-left cursor-pointer mt-2"
+          >
+            <svg className="w-4 h-4 shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        )}
 
         {/* Toronto callout — pushed to bottom on desktop, tight on mobile */}
         <div className="lg:mt-auto mt-4 border-t border-white/10 px-4 py-4 flex flex-col items-center gap-2.5 text-center">

@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   const { userId, sessionClaims } = await auth();
 
   if (!userId) {
-    redirect("/hub/sign-in");
+    redirect("/hub");
   }
 
   const role = sessionClaims?.role as string | undefined;

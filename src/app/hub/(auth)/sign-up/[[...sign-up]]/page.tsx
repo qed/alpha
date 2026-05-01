@@ -2,7 +2,7 @@ import { SignUp } from "@clerk/nextjs";
 
 export default function SignUpPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-paper-2">
+    <div className="flex flex-1 items-center justify-center py-12">
       <SignUp
         forceRedirectUrl="/hub"
         appearance={{
@@ -14,6 +14,6 @@ export default function SignUpPage() {
           },
         }}
       />
-    </main>
+    </div>
   );
 }

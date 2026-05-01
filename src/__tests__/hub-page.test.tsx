@@ -100,24 +100,6 @@ describe("HubPage", () => {
       expect(cta.closest("a")).toHaveAttribute("href", "/hub/sign-in");
     });
 
-    it("renders the sidebar with nav items", async () => {
-      const page = await HubPage();
-      render(page);
-      expect(screen.getByText("Intro")).toBeInTheDocument();
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
-      expect(screen.getByText("Pipeline")).toBeInTheDocument();
-      expect(screen.getByText("Library")).toBeInTheDocument();
-      expect(screen.getByText("Events")).toBeInTheDocument();
-      expect(screen.getByText("My Page")).toBeInTheDocument();
-    });
-
-    it("renders the Alpha Toronto callout in welcome content", async () => {
-      const page = await HubPage();
-      render(page);
-      const links = screen.getAllByText("alphatoronto.org");
-      expect(links.length).toBeGreaterThanOrEqual(1);
-    });
-
     it("renders the short CTA (10 words or fewer)", async () => {
       const page = await HubPage();
       render(page);

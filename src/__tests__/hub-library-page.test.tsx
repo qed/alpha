@@ -1,14 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-const mockAuth = vi.fn();
-
 vi.mock("@clerk/nextjs/server", () => ({
-  auth: () => mockAuth(),
-}));
-
-vi.mock("@clerk/nextjs", () => ({
-  useClerk: () => ({ signOut: vi.fn() }),
+  auth: () => Promise.resolve({ userId: null }),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -57,28 +51,8 @@ describe("LibraryPage", () => {
   });
 
   describe("page shell", () => {
-    beforeEach(() => {
-      mockAuth.mockResolvedValue({ userId: null });
-    });
-
-    it("renders inside HubShell with sidebar navigation", async () => {
-      const page = await LibraryPage();
-      render(page);
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Library");
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
-      expect(screen.getByText("Pipeline")).toBeInTheDocument();
-    });
-
-    it("renders without redirect for unauthenticated users", async () => {
-      const page = await LibraryPage();
-      render(page);
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Library");
-    });
-
-    it("renders for authenticated users", async () => {
-      mockAuth.mockResolvedValue({ userId: "user_123" });
-      const page = await LibraryPage();
-      render(page);
+    it("renders the Library heading", () => {
+      render(<LibraryPage />);
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Library");
     });
   });

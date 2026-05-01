@@ -1,13 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { HubShell } from "@/components/hub/hub-shell";
 
 export default async function HubPage() {
   const { userId } = await auth();
   const isAuthenticated = !!userId;
 
   return (
-    <HubShell isAuthenticated={isAuthenticated}>
+    <>
       {/* Hero */}
       <section
         className="relative text-white overflow-hidden bg-cover bg-center"
@@ -108,6 +107,6 @@ export default async function HubPage() {
         </div>
       </section>
 
-    </HubShell>
+    </>
   );
 }

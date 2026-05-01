@@ -102,135 +102,145 @@ async function assignGeography(
 export async function selectGeography(
   input: unknown
 ): Promise<ActionResult> {
-  const session = await requireAuthenticated();
+  try {
+    const session = await requireAuthenticated();
 
-  if (session.role !== "champion") {
-    return { success: false, error: "Only champions can select a geography." };
-  }
-
-  const parsed = selectGeographySchema.safeParse(input);
-  if (!parsed.success) {
-    return { success: false, error: "Invalid input." };
-  }
-
-  const supabase = getSupabaseAdminClient();
-  const profile = await ensureProfile(supabase, session);
-
-  if (profile.geography_id) {
-    if (session.geographyId) {
-      return { success: false, error: "You already have a geography assigned." };
+    if (session.role !== "champion") {
+      return { success: false, error: "Only champions can select a geography." };
     }
 
-    // Partial failure retry: Supabase has geography but Clerk does not
-    try {
-      const clerk = await clerkClient();
-      await clerk.users.updateUserMetadata(session.userId, {
-        privateMetadata: { geography_id: profile.geography_id },
+    const parsed = selectGeographySchema.safeParse(input);
+    if (!parsed.success) {
+      return { success: false, error: "Invalid input." };
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const profile = await ensureProfile(supabase, session);
+
+    if (profile.geography_id) {
+      if (session.geographyId) {
+        return { success: false, error: "You already have a geography assigned." };
+      }
+
+      // Partial failure retry: Supabase has geography but Clerk does not
+      try {
+        const clerk = await clerkClient();
+        await clerk.users.updateUserMetadata(session.userId, {
+          privateMetadata: { geography_id: profile.geography_id },
+        });
+        return { success: true };
+      } catch {
+        return {
+          success: false,
+          error: "Session update failed. Please try again.",
+          retryable: true,
+        };
+      }
+    }
+
+    const result = await assignGeography(
+      supabase,
+      profile.id,
+      session.userId,
+      parsed.data.geographyId
+    );
+
+    if (result.success) {
+      await supabase.from("audit_log").insert({
+        actor_id: profile.id,
+        action: "geography-select",
+        geography_id: parsed.data.geographyId,
       });
-      return { success: true };
-    } catch {
-      return {
-        success: false,
-        error: "Session update failed. Please try again.",
-        retryable: true,
-      };
     }
+
+    return result;
+  } catch (err) {
+    console.error("selectGeography failed:", err);
+    return { success: false, error: "Something went wrong. Please try again." };
   }
-
-  const result = await assignGeography(
-    supabase,
-    profile.id,
-    session.userId,
-    parsed.data.geographyId
-  );
-
-  if (result.success) {
-    await supabase.from("audit_log").insert({
-      actor_id: profile.id,
-      action: "geography-select",
-      geography_id: parsed.data.geographyId,
-    });
-  }
-
-  return result;
 }
 
 export async function createGeography(
   input: unknown
 ): Promise<ActionResult> {
-  const session = await requireAuthenticated();
+  try {
+    const session = await requireAuthenticated();
 
-  if (session.role !== "champion") {
-    return { success: false, error: "Only champions can create a geography." };
-  }
-
-  const parsed = createGeographySchema.safeParse(input);
-  if (!parsed.success) {
-    return { success: false, error: "Invalid input." };
-  }
-
-  const supabase = getSupabaseAdminClient();
-  const profile = await ensureProfile(supabase, session);
-
-  if (profile.geography_id) {
-    return { success: false, error: "You already have a geography assigned." };
-  }
-
-  const { name, region, country } = parsed.data;
-
-  let slug = `${slugify(name)}-${slugify(region)}`;
-
-  if ((RESERVED_SLUGS as readonly string[]).includes(slug)) {
-    slug = `${slug}-1`;
-  }
-
-  const { data: existingSlugs } = await supabase
-    .from("geographies")
-    .select("slug")
-    .like("slug", `${slug}%`);
-
-  if (existingSlugs && existingSlugs.length > 0) {
-    const taken = new Set(existingSlugs.map((g) => g.slug));
-    if (taken.has(slug)) {
-      let suffix = 2;
-      while (taken.has(`${slug}-${suffix}`)) {
-        suffix++;
-      }
-      slug = `${slug}-${suffix}`;
+    if (session.role !== "champion") {
+      return { success: false, error: "Only champions can create a geography." };
     }
+
+    const parsed = createGeographySchema.safeParse(input);
+    if (!parsed.success) {
+      return { success: false, error: "Invalid input." };
+    }
+
+    const supabase = getSupabaseAdminClient();
+    const profile = await ensureProfile(supabase, session);
+
+    if (profile.geography_id) {
+      return { success: false, error: "You already have a geography assigned." };
+    }
+
+    const { name, region, country } = parsed.data;
+
+    let slug = `${slugify(name)}-${slugify(region)}`;
+
+    if ((RESERVED_SLUGS as readonly string[]).includes(slug)) {
+      slug = `${slug}-1`;
+    }
+
+    const { data: existingSlugs } = await supabase
+      .from("geographies")
+      .select("slug")
+      .like("slug", `${slug}%`);
+
+    if (existingSlugs && existingSlugs.length > 0) {
+      const taken = new Set(existingSlugs.map((g) => g.slug));
+      if (taken.has(slug)) {
+        let suffix = 2;
+        while (taken.has(`${slug}-${suffix}`)) {
+          suffix++;
+        }
+        slug = `${slug}-${suffix}`;
+      }
+    }
+
+    const { data: geography, error: insertError } = await supabase
+      .from("geographies")
+      .insert({
+        slug,
+        name,
+        region,
+        country,
+        status: "pre-launch",
+      })
+      .select("id")
+      .single();
+
+    if (insertError || !geography) {
+      return { success: false, error: "Failed to create geography." };
+    }
+
+    const result = await assignGeography(
+      supabase,
+      profile.id,
+      session.userId,
+      geography.id
+    );
+
+    if (result.success) {
+      await supabase.from("audit_log").insert({
+        actor_id: profile.id,
+        action: "geography-create",
+        geography_id: geography.id,
+        metadata: { slug, name, region, country },
+      });
+    }
+
+    return { ...result, geographyId: geography.id };
+  } catch (err) {
+    console.error("createGeography failed:", err);
+    return { success: false, error: "Something went wrong. Please try again." };
   }
-
-  const { data: geography, error: insertError } = await supabase
-    .from("geographies")
-    .insert({
-      slug,
-      name,
-      region,
-      country,
-      status: "pre-launch",
-    })
-    .select("id")
-    .single();
-
-  if (insertError || !geography) {
-    return { success: false, error: "Failed to create geography." };
-  }
-
-  const result = await assignGeography(
-    supabase,
-    profile.id,
-    session.userId,
-    geography.id
-  );
-
-  if (result.success) {
-    await supabase.from("audit_log").insert({
-      actor_id: profile.id,
-      action: "geography-create",
-      geography_id: geography.id,
-      metadata: { slug, name, region, country },
-    });
-  }
-
-  return { ...result, geographyId: geography.id };
 }

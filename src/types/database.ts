@@ -81,7 +81,9 @@ export type AuditAction =
   | "note-add"
   | "champion-create"
   | "champion-deactivate"
-  | "champion-reassign";
+  | "champion-reassign"
+  | "geography-select"
+  | "geography-create";
 
 export interface DbAuditLog {
   id: string;

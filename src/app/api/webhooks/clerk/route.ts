@@ -49,19 +49,26 @@ export async function POST(req: Request) {
   const email = data.email_addresses[0]?.email_address;
   const fullName = [data.first_name, data.last_name].filter(Boolean).join(" ");
   const role = data.private_metadata?.role || "champion";
-  const geographyId = data.private_metadata?.geography_id || null;
 
   const supabase = getSupabaseAdminClient();
 
+  const profileData: Record<string, unknown> = {
+    clerk_user_id: data.id,
+    email,
+    full_name: fullName,
+    role,
+    is_active: true,
+  };
+
+  if (
+    data.private_metadata &&
+    Object.hasOwn(data.private_metadata, "geography_id")
+  ) {
+    profileData.geography_id = data.private_metadata.geography_id ?? null;
+  }
+
   const { error } = await supabase.from("profiles").upsert(
-    {
-      clerk_user_id: data.id,
-      email,
-      full_name: fullName,
-      role,
-      geography_id: geographyId,
-      is_active: true,
-    },
+    profileData,
     { onConflict: "clerk_user_id" }
   );
 

@@ -158,7 +158,7 @@ describe("reassignGeography — Clerk metadata sync", () => {
   });
 
   it("rejects inactive target champion", async () => {
-    newChampionResult = { ...newChampionResult, is_active: false };
+    newChampionResult = { ...(newChampionResult as Record<string, unknown>), is_active: false };
 
     const result = await reassignGeography({
       geographyId: "geo-1",

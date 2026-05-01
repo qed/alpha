@@ -44,9 +44,12 @@ export function GeographyPicker({ geographies }: GeographyPickerProps) {
 
   async function handleRefresh() {
     try {
-      await user?.reload();
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 3000)
+      );
+      await Promise.race([user?.reload(), timeout]);
     } catch {
-      // Fallback: full page reload if Clerk refresh fails
+      // Clerk refresh failed or timed out — fall through to router refresh
     }
     router.refresh();
   }

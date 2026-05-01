@@ -1,7 +1,7 @@
 ---
 title: "feat: Add full Alpha website template to Library"
 type: feat
-status: active
+status: completed
 date: 2026-05-01
 origin: docs/brainstorms/2026-05-01-library-alpha-website-template-requirements.md
 ---

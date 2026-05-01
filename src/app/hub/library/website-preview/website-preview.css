@@ -178,6 +178,8 @@
 /* ===== HERO ===== */
 .wp-hero {
   padding: 80px 32px 60px;
+  background: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)),
+    url("/artifacts/background-image.jpg") center / cover no-repeat;
 }
 
 .wp-hero-grid {
@@ -244,7 +246,8 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 16px;
 }
 
 .wp-events-bar-label {
@@ -256,19 +259,21 @@
 
 .wp-events-bar-cta {
   display: inline-block;
-  background: var(--wp-blue);
-  color: var(--wp-white);
+  background: transparent;
+  color: var(--wp-blue);
   font-family: var(--wp-font-heading);
   font-weight: 600;
   font-size: 14px;
-  padding: 10px 24px;
+  padding: 8px 20px;
+  border: 2px solid var(--wp-blue);
   border-radius: 999px;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .wp-events-bar-cta:hover {
-  opacity: 0.9;
+  background: var(--wp-blue);
+  color: var(--wp-white);
 }
 
 /* Form card (inside hero right column) */

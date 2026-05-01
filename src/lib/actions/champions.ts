@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { clerkClient } from "@clerk/nextjs/server";
 
 interface ActionResult {
   success: boolean;
@@ -126,7 +127,7 @@ export async function reassignGeography(data: {
 
   const { data: newChampion } = await supabase
     .from("profiles")
-    .select("id, full_name, geography_id, is_active")
+    .select("id, full_name, geography_id, is_active, clerk_user_id")
     .eq("id", data.newChampionProfileId)
     .single();
 
@@ -136,7 +137,7 @@ export async function reassignGeography(data: {
 
   const { data: currentChampion } = await supabase
     .from("profiles")
-    .select("id, full_name")
+    .select("id, full_name, clerk_user_id")
     .eq("geography_id", data.geographyId)
     .eq("role", "champion")
     .eq("is_active", true)
@@ -147,6 +148,18 @@ export async function reassignGeography(data: {
       .from("profiles")
       .update({ geography_id: null })
       .eq("id", currentChampion.id);
+
+    try {
+      const clerk = await clerkClient();
+      await clerk.users.updateUserMetadata(currentChampion.clerk_user_id, {
+        privateMetadata: { geography_id: null },
+      });
+    } catch {
+      return {
+        success: false,
+        error: "Failed to clear old champion's session. Geography partially reassigned.",
+      };
+    }
   }
 
   const { error } = await supabase
@@ -156,6 +169,18 @@ export async function reassignGeography(data: {
 
   if (error) {
     return { success: false, error: "Failed to reassign geography." };
+  }
+
+  try {
+    const clerk = await clerkClient();
+    await clerk.users.updateUserMetadata(newChampion.clerk_user_id, {
+      privateMetadata: { geography_id: data.geographyId },
+    });
+  } catch {
+    return {
+      success: false,
+      error: "Geography reassigned in database but session update failed for new champion.",
+    };
   }
 
   await supabase.from("audit_log").insert({

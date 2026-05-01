@@ -44,7 +44,7 @@ export default async function HubPage() {
             </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <Link
-                href="/hub/library"
+                href="/hub/library#faq"
                 className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
               >
                 <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">
@@ -55,7 +55,7 @@ export default async function HubPage() {
                 </p>
               </Link>
               <Link
-                href="/hub/library"
+                href="/hub/library#testimonials"
                 className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
               >
                 <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">
@@ -67,7 +67,7 @@ export default async function HubPage() {
                 </p>
               </Link>
               <Link
-                href="/hub/library"
+                href="/hub/library#talking-points"
                 className="bg-paper rounded-lg px-5 py-5 border border-line hover:shadow-md hover:-translate-y-px transition-all duration-150 no-underline"
               >
                 <h3 className="font-[family-name:var(--font-display)] font-bold text-sm mb-1.5 text-ink">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAuthenticated } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   ProspectDetail,
   type ProspectDetailData,
@@ -22,7 +22,7 @@ export default async function ProspectDetailPage({ params }: Props) {
     return <GeographyPicker geographies={geographies} />;
   }
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect } = await supabase
     .from("prospects")

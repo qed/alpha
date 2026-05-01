@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   LeaderboardGrid,
   type GeographyCard,
@@ -8,7 +8,7 @@ import type { PipelineStage } from "@/lib/constants/pipeline";
 
 export default async function AdminLeaderboardPage() {
   await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: geographies } = await supabase
     .from("geographies")

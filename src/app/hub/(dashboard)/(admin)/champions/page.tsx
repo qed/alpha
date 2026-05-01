@@ -1,10 +1,10 @@
 import { requireAdmin } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { ChampionManager } from "@/components/admin/champion-manager";
 
 export default async function ChampionsPage() {
   await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: profiles } = await supabase
     .from("profiles")

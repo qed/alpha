@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { PipelineSummary } from "@/components/dashboard/pipeline-summary";
 import {
   ActivityFeed,
@@ -19,7 +19,7 @@ interface Props {
 export default async function AdminGeographyDrillDownPage({ params }: Props) {
   const { geography: slug } = await params;
   const session = await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: geography } = await supabase
     .from("geographies")

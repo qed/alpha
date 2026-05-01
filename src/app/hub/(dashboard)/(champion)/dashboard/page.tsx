@@ -1,5 +1,5 @@
 import { requireAuthenticated } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { PIPELINE_STAGES, type PipelineStage } from "@/lib/constants/pipeline";
 import { PipelineSummary } from "@/components/dashboard/pipeline-summary";
 import {
@@ -19,7 +19,7 @@ export default async function ChampionDashboardPage() {
     return <GeographyPicker geographies={geographies} />;
   }
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: geography } = await supabase
     .from("geographies")

@@ -1,7 +1,7 @@
 ---
 title: "feat: Hub Library page with accordion, video lightbox, and talking points"
 type: feat
-status: active
+status: completed
 date: 2026-04-30
 origin: docs/brainstorms/2026-04-30-hub-library-page-requirements.md
 ---
@@ -106,7 +106,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 1: Page Shell + Accordion Component
 
-- [ ] Replace placeholder with HubShell integration and accordion with fragment deep-linking
+- [x] Replace placeholder with HubShell integration and accordion with fragment deep-linking
 
 **Files:**
 - `src/app/hub/library/page.tsx` (replace)
@@ -139,7 +139,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 2: FAQ Library Section
 
-- [ ] Add FAQ content to the first accordion item
+- [x] Add FAQ content to the first accordion item
 
 **Files:**
 - `src/components/hub/library-accordion.tsx` (modify)
@@ -162,7 +162,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 3: Video Lightbox Component
 
-- [ ] Build video lightbox with YouTube embed and keyboard accessibility
+- [x] Build video lightbox with YouTube embed and keyboard accessibility
 
 **Files:**
 - `src/components/hub/video-lightbox.tsx` (create)
@@ -195,7 +195,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 4: Parent Testimonials Section
 
-- [ ] Add video thumbnail grid to the second accordion item, integrated with VideoLightbox
+- [x] Add video thumbnail grid to the second accordion item, integrated with VideoLightbox
 
 **Files:**
 - `src/components/hub/library-accordion.tsx` (modify)
@@ -221,7 +221,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 5: "Why Alpha" Talking Points Section
 
-- [ ] Add 10 talking point categories to the third accordion item
+- [x] Add 10 talking point categories to the third accordion item
 
 **Files:**
 - `src/components/hub/library-accordion.tsx` (modify)
@@ -247,7 +247,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 6: Intro Page Deep-Link Updates
 
-- [ ] Update hub intro page resource cards to link with fragment URLs
+- [x] Update hub intro page resource cards to link with fragment URLs
 
 **Files:**
 - `src/app/hub/page.tsx` (modify)
@@ -271,7 +271,7 @@ No existing accordion, modal/dialog, or video embed components in the codebase. 
 
 ### Unit 7: Test Suite
 
-- [ ] Comprehensive test file covering all library page behavior
+- [x] Comprehensive test file covering all library page behavior
 
 **Files:**
 - `src/__tests__/hub-library-page.test.tsx` (create)

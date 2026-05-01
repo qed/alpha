@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { VideoLightbox } from "./video-lightbox";
 
-const VIDEOS: { youtubeId: string; title: string }[] = [
+const VIDEOS: { youtubeId: string; title: string; thumbnail?: string }[] = [
   { youtubeId: "AsZ-4IlVzpQ", title: "From Good to Great — No Learning Gaps" },
   { youtubeId: "25iE7npgcz8", title: "A Place to Discover and Grow" },
   { youtubeId: "9Hcd3kCh7hI", title: "Real Growth in Action — First 30 Days" },
@@ -24,7 +24,7 @@ const VIDEOS: { youtubeId: string; title: string }[] = [
   { youtubeId: "4S4m1XpqQqA", title: "Why Alpha Was the Best Decision for Our Family" },
   { youtubeId: "CuSijUisnyE", title: "30 Days to a Different Kid" },
   { youtubeId: "WfFS6nxsbx8", title: "The Future Starts at Alpha" },
-  { youtubeId: "LnODnKOEp34", title: "A School That Feels Like Family" },
+  { youtubeId: "LnODnKOEp34", title: "A School That Feels Like Family", thumbnail: "/assets/thumbnails/LnODnKOEp34.jpg" },
   { youtubeId: "hFK-0325LP0", title: "Peter + Dana — App Learning" },
   { youtubeId: "JU_XIXU-cuE", title: "The Real Reason These Kids Love Going to School" },
 ];
@@ -109,11 +109,16 @@ function TestimonialsSection() {
           >
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <img
-                src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                src={video.thumbnail ?? `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
                 onError={(e) => {
                   const target = e.currentTarget;
-                  if (!target.dataset.fallback) {
+                  if (video.thumbnail) return;
+                  const step = target.dataset.fallback;
+                  if (!step) {
                     target.dataset.fallback = "1";
+                    target.src = `https://img.youtube.com/vi/${video.youtubeId}/sddefault.jpg`;
+                  } else if (step === "1") {
+                    target.dataset.fallback = "2";
                     target.src = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
                   }
                 }}

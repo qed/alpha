@@ -131,41 +131,28 @@ describe("HubPage", () => {
       });
     });
 
-    it("renders the intro page (no redirect to dashboard)", async () => {
-      const page = await HubPage();
-      render(page);
-      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
-    });
-
-    it("renders Go to Dashboard CTA for authenticated users", async () => {
-      const page = await HubPage();
-      render(page);
-      const cta = screen.getByText("Go to Dashboard");
-      expect(cta.closest("a")).toHaveAttribute("href", "/hub/dashboard");
+    it("redirects to dashboard", async () => {
+      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT:/hub/dashboard");
     });
   });
 
   describe("authenticated admin", () => {
-    it("renders the intro page (no redirect to leaderboard)", async () => {
+    it("redirects to leaderboard", async () => {
       mockAuth.mockResolvedValue({
         userId: "user_admin",
         sessionClaims: { role: "admin" },
       });
-      const page = await HubPage();
-      render(page);
-      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
+      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT:/hub/leaderboard");
     });
   });
 
   describe("authenticated user with no geography", () => {
-    it("renders the intro page without errors", async () => {
+    it("redirects to dashboard where geography picker shows", async () => {
       mockAuth.mockResolvedValue({
         userId: "user_nogeo",
         sessionClaims: { role: "champion" },
       });
-      const page = await HubPage();
-      render(page);
-      expect(screen.getByText("Alpha Champions Hub")).toBeInTheDocument();
+      await expect(HubPage()).rejects.toThrow("NEXT_REDIRECT:/hub/dashboard");
     });
   });
 });

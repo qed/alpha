@@ -1,10 +1,16 @@
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { HubShell } from "@/components/hub/hub-shell";
 
 export default async function HubPage() {
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
   const isAuthenticated = !!userId;
+
+  if (isAuthenticated) {
+    const role = sessionClaims?.role as string | undefined;
+    redirect(role === "admin" ? "/hub/leaderboard" : "/hub/dashboard");
+  }
 
   return (
     <HubShell isAuthenticated={isAuthenticated}>

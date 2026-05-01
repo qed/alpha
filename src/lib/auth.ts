@@ -11,17 +11,15 @@ export async function requireAuth(): Promise<SessionInfo> {
   const { userId, sessionClaims } = await auth();
 
   if (!userId) {
-    redirect("/hub/sign-in");
+    redirect("/hub");
   }
 
-  const role = (sessionClaims?.role as string) || "champion";
-  const geographyId = (sessionClaims?.geography_id as string) || null;
+  const rawRole = sessionClaims?.role as string | undefined;
+  const role = rawRole === "admin" ? "admin" : "champion";
+  const rawGeo = sessionClaims?.geography_id as string | undefined;
+  const geographyId = rawGeo && !rawGeo.startsWith("{{") ? rawGeo : null;
 
-  if (role !== "admin" && role !== "champion") {
-    redirect("/hub/sign-in");
-  }
-
-  return { userId, role: role as "admin" | "champion", geographyId };
+  return { userId, role, geographyId };
 }
 
 export async function requireAdmin(): Promise<SessionInfo> {

@@ -4,6 +4,7 @@ export default function SignInPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper-2">
       <SignIn
+        forceRedirectUrl="/hub"
         appearance={{
           elements: {
             rootBox: "mx-auto",

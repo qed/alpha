@@ -15,7 +15,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId, sessionClaims } = await auth();
+  const authResult = await auth();
+  const { userId, sessionClaims } = authResult;
+
+  console.log("[dashboard-layout] auth() result:", JSON.stringify({ userId, sessionClaims, keys: Object.keys(authResult) }));
 
   if (!userId) {
     redirect("/hub");

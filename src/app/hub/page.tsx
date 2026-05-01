@@ -4,6 +4,7 @@ import { HubShell } from "@/components/hub/hub-shell";
 
 export default async function HubPage() {
   const { userId } = await auth();
+  console.log("[hub-page] auth() userId:", userId);
   const isAuthenticated = !!userId;
 
   return (

@@ -87,40 +87,39 @@ export default async function PipelinePage({
       .single();
 
     if (detail) {
-      // Fetch children
-      const { data: children } = await supabase
-        .from("children")
-        .select("id, first_name, grade, age, gender")
-        .eq("prospect_id", prospectId);
-
-      // Fetch notes with author names
-      const { data: notes } = await supabase
-        .from("notes")
-        .select("id, body, author_id, created_at")
-        .eq("prospect_id", prospectId)
-        .order("created_at", { ascending: false });
-
-      // Fetch status history
-      const { data: statusHistory } = await supabase
-        .from("status_history")
-        .select("id, old_status, new_status, changed_by, changed_at")
-        .eq("prospect_id", prospectId)
-        .order("changed_at", { ascending: false });
-
-      // Fetch audit log entries for signal-toggle, concern-update, heat-override
-      const { data: auditEntries } = await supabase
-        .from("audit_log")
-        .select("id, action, metadata, created_at, actor_id")
-        .eq("prospect_id", prospectId)
-        .in("action", ["signal-toggle", "concern-update", "heat-override"])
-        .order("created_at", { ascending: false });
-
-      // Fetch library sends
-      const { data: librarySends } = await supabase
-        .from("library_sends")
-        .select("id, library_item_id, channel, sent_at")
-        .eq("prospect_id", prospectId)
-        .order("sent_at", { ascending: false });
+      const [
+        { data: children },
+        { data: notes },
+        { data: statusHistory },
+        { data: auditEntries },
+        { data: librarySends },
+      ] = await Promise.all([
+        supabase
+          .from("children")
+          .select("id, first_name, grade, age, gender")
+          .eq("prospect_id", prospectId),
+        supabase
+          .from("notes")
+          .select("id, body, author_id, created_at")
+          .eq("prospect_id", prospectId)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("status_history")
+          .select("id, old_status, new_status, changed_by, changed_at")
+          .eq("prospect_id", prospectId)
+          .order("changed_at", { ascending: false }),
+        supabase
+          .from("audit_log")
+          .select("id, action, metadata, created_at, actor_id")
+          .eq("prospect_id", prospectId)
+          .in("action", ["signal-toggle", "concern-update", "heat-override"])
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("library_sends")
+          .select("id, library_item_id, channel, sent_at")
+          .eq("prospect_id", prospectId)
+          .order("sent_at", { ascending: false }),
+      ]);
 
       selectedProspect = {
         ...detail,

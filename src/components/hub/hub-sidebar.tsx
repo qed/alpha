@@ -77,11 +77,12 @@ function LockIcon() {
 
 interface HubSidebarProps {
   isAuthenticated: boolean;
+  geographyName: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function HubSidebar({ isAuthenticated, isOpen, onClose }: HubSidebarProps) {
+export function HubSidebar({ isAuthenticated, geographyName, isOpen, onClose }: HubSidebarProps) {
   const { signOut } = useClerk();
   const router = useRouter();
   const pathname = usePathname();
@@ -246,7 +247,13 @@ export function HubSidebar({ isAuthenticated, isOpen, onClose }: HubSidebarProps
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          <span className="text-white/50 italic text-xs">Set after sign-in</span>
+          {geographyName ? (
+            <span className="text-white text-xs font-semibold">{geographyName}</span>
+          ) : (
+            <span className="text-white/50 italic text-xs">
+              {isAuthenticated ? "Not yet selected" : "Set after sign-in"}
+            </span>
+          )}
         </div>
 
         {/* Sign out */}

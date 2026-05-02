@@ -7,13 +7,17 @@ import { PipelineFilters } from "./pipeline-filters";
 import { PipelineTable, type PipelineRow } from "./pipeline-table";
 import { PipelineEmptyState } from "./pipeline-empty-state";
 import { AddProspectModal } from "./add-prospect-modal";
+import { KanbanBoard } from "./kanban-board";
+import { ToastProvider } from "@/components/ui/toast";
+import { updateProspectStatus } from "@/lib/actions/prospects";
+import {
+  ContactDrawer,
+  type SelectedProspectDetail,
+} from "./contact-drawer";
 
 const VIEW_PREF_KEY = "pipeline-view-preference";
 
-export interface SelectedProspect {
-  id: string;
-  [key: string]: unknown;
-}
+export type SelectedProspect = SelectedProspectDetail;
 
 interface PipelineShellProps {
   prospects: PipelineRow[];
@@ -72,10 +76,22 @@ export function PipelineShell({
     return result;
   }, [prospects, stageFilter, neighborhoodFilter]);
 
+  // Wrap the updateProspectStatus server action for use by KanbanBoard
+  const handleStageChange = useCallback(
+    async (data: {
+      prospect_id: string;
+      new_status: PipelineStage;
+      updated_at: string;
+    }) => {
+      return updateProspectStatus(data);
+    },
+    []
+  );
+
   // Zero prospects total
   if (prospects.length === 0) {
     return (
-      <>
+      <ToastProvider>
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="font-[family-name:var(--font-display)] text-2xl font-bold text-ink">
@@ -89,12 +105,12 @@ export function PipelineShell({
           onClose={() => setModalOpen(false)}
           neighborhoods={neighborhoods}
         />
-      </>
+      </ToastProvider>
     );
   }
 
   return (
-    <>
+    <ToastProvider>
       <div className="space-y-6">
         {/* Header row */}
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -181,23 +197,16 @@ export function PipelineShell({
             onClearFilters={clearFilters}
           />
         ) : (
-          // Kanban placeholder (Unit 6)
-          <div className="text-center py-12 text-ink-3 text-sm border border-dashed border-line rounded-md">
-            Kanban view coming soon.
-          </div>
+          <KanbanBoard
+            prospects={filteredProspects}
+            onStageChange={handleStageChange}
+          />
         )}
       </div>
 
-      {/* Contact Drawer placeholder (Unit 5) */}
+      {/* Contact Drawer */}
       {prospectParam && selectedProspect && (
-        <div
-          className="fixed top-0 right-0 bottom-0 w-[920px] max-w-full bg-paper border-l border-line shadow-lg z-40 p-6 overflow-y-auto"
-          data-testid="contact-drawer-placeholder"
-        >
-          <p className="text-sm text-ink-3">
-            Contact Drawer for prospect {prospectParam} (Unit 5)
-          </p>
-        </div>
+        <ContactDrawer prospect={selectedProspect} />
       )}
 
       {/* Add Prospect Modal */}
@@ -206,6 +215,6 @@ export function PipelineShell({
         onClose={() => setModalOpen(false)}
         neighborhoods={neighborhoods}
       />
-    </>
+    </ToastProvider>
   );
 }

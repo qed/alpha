@@ -124,12 +124,17 @@ export default async function PipelinePage({
 
       selectedProspect = {
         ...detail,
+        status: detail.status as PipelineStage,
+        concerns: (detail.concerns as string[]) ?? [],
+        engagement_signals: (detail.engagement_signals as string[]) ?? [],
+        last_touch_at: detail.last_touch_at ?? detail.created_at,
+        heat_score: detail.heat_score ?? 3,
         children: children ?? [],
         notes: notes ?? [],
         statusHistory: statusHistory ?? [],
         auditEntries: auditEntries ?? [],
         librarySends: librarySends ?? [],
-      };
+      } as SelectedProspect;
     }
   }
 

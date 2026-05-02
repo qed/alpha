@@ -43,9 +43,18 @@ export interface DrawerAuditEntry {
   actor_id: string;
 }
 
+export interface LibraryItem {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  concern: string | null;
+}
+
 export interface DrawerLibrarySend {
   id: string;
   library_item_id: string;
+  concern: string | null;
   channel: string;
   sent_at: string;
 }
@@ -75,6 +84,7 @@ export interface SelectedProspectDetail {
   statusHistory: DrawerStatusHistory[];
   auditEntries: DrawerAuditEntry[];
   librarySends: DrawerLibrarySend[];
+  libraryItems: LibraryItem[];
 }
 
 interface ContactDrawerProps {

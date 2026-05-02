@@ -93,6 +93,7 @@ export default async function PipelinePage({
         { data: statusHistory },
         { data: auditEntries },
         { data: librarySends },
+        { data: libraryItems },
       ] = await Promise.all([
         supabase
           .from("children")
@@ -116,9 +117,13 @@ export default async function PipelinePage({
           .order("created_at", { ascending: false }),
         supabase
           .from("library_sends")
-          .select("id, library_item_id, channel, sent_at")
+          .select("id, library_item_id, channel, sent_at, library_items(concern)")
           .eq("prospect_id", prospectId)
           .order("sent_at", { ascending: false }),
+        supabase
+          .from("library_items")
+          .select("id, type, title, body, concern")
+          .or(`geography_id.is.null,geography_id.eq.${session.geographyId}`),
       ]);
 
       selectedProspect = {
@@ -132,7 +137,12 @@ export default async function PipelinePage({
         notes: notes ?? [],
         statusHistory: statusHistory ?? [],
         auditEntries: auditEntries ?? [],
-        librarySends: librarySends ?? [],
+        librarySends: (librarySends ?? []).map((s: any) => ({
+          ...s,
+          concern: s.library_items?.concern ?? null,
+          library_items: undefined,
+        })),
+        libraryItems: libraryItems ?? [],
       } as SelectedProspect;
     }
   }

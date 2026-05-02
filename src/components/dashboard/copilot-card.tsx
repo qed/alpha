@@ -60,8 +60,12 @@ export function CopilotCard({ prospect }: CopilotCardProps) {
   const hasSignals = prospect.engagement_signals.length > 0;
   const isNew = !hasConcerns && !hasSignals;
 
-  // Build sentConcerns set from library sends (placeholder - will always be empty until library UI ships)
-  const sentConcerns = new Set<string>();
+  // Build sentConcerns from library sends so rule 3 stops firing for addressed concerns
+  const sentConcerns = new Set(
+    prospect.librarySends
+      .map((s) => s.concern)
+      .filter((c): c is string => c != null)
+  );
 
   const copilotData: ProspectForCopilot = {
     stage: prospect.status,

@@ -13,6 +13,7 @@ import { updateProspectStatus } from "@/lib/actions/prospects";
 import { overrideHeat } from "@/lib/actions/pipeline";
 import { HeatPips } from "./heat-pips";
 import { suggestHeat } from "@/lib/pipeline/copilot-engine";
+import { LibrarySendPanel } from "./library-send-panel";
 import type { SelectedProspectDetail } from "./contact-drawer";
 
 interface DrawerHeaderProps {
@@ -48,6 +49,7 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [libraryPanelOpen, setLibraryPanelOpen] = useState(false);
 
   const allowedTransitions = ALLOWED_TRANSITIONS[prospect.status];
 
@@ -189,12 +191,23 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
         {LIBRARY_UI_ENABLED && (
           <button
             type="button"
+            onClick={() => setLibraryPanelOpen(true)}
             className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
           >
             Send from library
           </button>
         )}
       </div>
+
+      {/* Library Send Panel */}
+      {libraryPanelOpen && (
+        <LibrarySendPanel
+          libraryItems={prospect.libraryItems}
+          librarySends={prospect.librarySends}
+          prospectId={prospect.id}
+          onClose={() => setLibraryPanelOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use server";
 
 import { requireAuthenticated } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createPipelineProspectSchema,
@@ -34,7 +33,7 @@ export async function createPipelineProspect(
     return { success: false, error: "Invalid input." };
   }
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: insertError } = await supabase
     .from("prospects")
@@ -83,7 +82,7 @@ export async function toggleSignal(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, signal_id, active } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -149,7 +148,7 @@ export async function updateConcerns(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, concerns } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -204,7 +203,7 @@ export async function overrideHeat(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, heat_score } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -261,7 +260,7 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, body } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -320,7 +319,7 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, library_item_id } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   // Ownership check: verify prospect belongs to champion's geography
   const { data: prospect, error: fetchError } = await supabase
@@ -371,9 +370,8 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     .update({ last_touch_at: new Date().toISOString() })
     .eq("id", prospect_id);
 
-  // Increment send_count via admin client (no RLS UPDATE policy on library_items)
-  const adminClient = getSupabaseAdminClient();
-  await adminClient
+  // Increment send_count on the library item
+  await supabase
     .from("library_items")
     .update({ send_count: item.send_count + 1 })
     .eq("id", library_item_id);

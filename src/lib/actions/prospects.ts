@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAuthenticated, requireAdmin } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   isValidTransition,
   ENROLLMENT_THRESHOLD,
@@ -32,7 +32,7 @@ export async function updateProspectStatus(
   }
 
   const { prospect_id, new_status, updated_at } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -106,7 +106,7 @@ export async function addNote(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, body } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect } = await supabase
     .from("prospects")
@@ -153,7 +153,7 @@ export async function setFollowUpDate(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, follow_up_date, updated_at } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect } = await supabase
     .from("prospects")
@@ -195,7 +195,7 @@ export async function createProspect(data: unknown): Promise<ActionResult & { pr
   }
 
   const { children, ...parentFields } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: insertError } = await supabase
     .from("prospects")
@@ -245,7 +245,7 @@ async function checkAutoPromotion(
   geographyId: string,
   actorId: string
 ): Promise<void> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: geography } = await supabase
     .from("geographies")
@@ -296,7 +296,7 @@ export async function deleteProspect(
   prospectId: string
 ): Promise<ActionResult> {
   const session = await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect } = await supabase
     .from("prospects")

@@ -38,25 +38,6 @@ const mockLibraryItemUpdate = vi.fn();
 
 vi.mock("@/lib/supabase/admin", () => ({
   getSupabaseAdminClient: () => ({
-    from: (table: string) => {
-      if (table === "library_items") {
-        return {
-          update: (data: unknown) => {
-            mockLibraryItemUpdate(data);
-            return {
-              eq: () => Promise.resolve(libraryItemUpdateResult),
-            };
-          },
-        };
-      }
-      return {};
-    },
-  }),
-}));
-
-vi.mock("@/lib/supabase/server", () => ({
-  getSupabaseServerClient: () =>
-    Promise.resolve({
       from: (table: string) => {
         if (table === "prospects") {
           return {

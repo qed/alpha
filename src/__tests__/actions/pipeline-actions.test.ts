@@ -36,6 +36,24 @@ const mockAuditInsert = vi.fn();
 const mockLibrarySendInsert = vi.fn();
 const mockLibraryItemUpdate = vi.fn();
 
+vi.mock("@/lib/supabase/admin", () => ({
+  getSupabaseAdminClient: () => ({
+    from: (table: string) => {
+      if (table === "library_items") {
+        return {
+          update: (data: unknown) => {
+            mockLibraryItemUpdate(data);
+            return {
+              eq: () => Promise.resolve(libraryItemUpdateResult),
+            };
+          },
+        };
+      }
+      return {};
+    },
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   getSupabaseServerClient: () =>
     Promise.resolve({
@@ -997,6 +1015,11 @@ describe("recordLibrarySend", () => {
       geography_id: SESSION_GEO,
       channel: "in-app",
     });
+
+    // Verify last_touch_at update on prospect
+    expect(mockProspectUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ last_touch_at: expect.any(String) })
+    );
 
     // Verify send_count increment (0 + 1 = 1)
     expect(mockLibraryItemUpdate).toHaveBeenCalledWith({ send_count: 1 });

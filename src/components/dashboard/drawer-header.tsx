@@ -6,7 +6,6 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import {
   ALLOWED_TRANSITIONS,
   STAGE_LABELS,
-  LIBRARY_UI_ENABLED,
   type PipelineStage,
 } from "@/lib/constants/pipeline";
 import { updateProspectStatus } from "@/lib/actions/prospects";
@@ -187,16 +186,13 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
           Log activity
         </button>
 
-        {/* Send from library - hidden when flag is false */}
-        {LIBRARY_UI_ENABLED && (
-          <button
-            type="button"
-            onClick={() => setLibraryPanelOpen(true)}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
-          >
-            Send from library
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setLibraryPanelOpen(true)}
+          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
+        >
+          Send from library
+        </button>
       </div>
 
       {/* Library Send Panel */}
@@ -204,6 +200,7 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
         <LibrarySendPanel
           libraryItems={prospect.libraryItems}
           librarySends={prospect.librarySends}
+          prospectConcerns={prospect.concerns}
           prospectId={prospect.id}
           onClose={() => setLibraryPanelOpen(false)}
         />

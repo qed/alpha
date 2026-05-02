@@ -89,6 +89,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[tuitionItem, paceItem]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -103,6 +104,26 @@ describe("LibrarySendPanel", () => {
     ).toBeInTheDocument();
   });
 
+  it("only shows items matching the prospect's concerns", () => {
+    const tuitionItem = makeLibraryItem({ concern: "tuition", title: "Tuition FAQ" });
+    const paceItem = makeLibraryItem({ concern: "pace", title: "Pace FAQ" });
+    const socialItem = makeLibraryItem({ concern: "socialization", title: "Social FAQ" });
+
+    render(
+      <LibrarySendPanel
+        libraryItems={[tuitionItem, paceItem, socialItem]}
+        librarySends={[]}
+        prospectConcerns={["tuition", "pace"]}
+        prospectId={prospectId}
+        onClose={onClose}
+      />
+    );
+
+    expect(screen.getByText("Tuition FAQ")).toBeInTheDocument();
+    expect(screen.getByText("Pace FAQ")).toBeInTheDocument();
+    expect(screen.queryByText("Social FAQ")).not.toBeInTheDocument();
+  });
+
   it("each item shows title, type badge text, and body content", () => {
     const item = makeLibraryItem({
       title: "Financial Aid Overview",
@@ -114,6 +135,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -133,6 +155,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -156,6 +179,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -179,6 +203,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[send]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -188,11 +213,12 @@ describe("LibrarySendPanel", () => {
     expect(sentBtn).toBeDisabled();
   });
 
-  it("shows empty state when prospect has no concerns (empty libraryItems)", () => {
+  it("shows empty state when prospect has no concerns", () => {
     render(
       <LibrarySendPanel
-        libraryItems={[]}
+        libraryItems={[makeLibraryItem({ concern: "tuition" })]}
         librarySends={[]}
+        prospectConcerns={[]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -210,6 +236,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -225,6 +252,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[makeLibraryItem()]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -241,6 +269,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[makeLibraryItem()]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -259,6 +288,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -284,6 +314,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />
@@ -326,6 +357,7 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={items}
         librarySends={[]}
+        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
         prospectId={prospectId}
         onClose={onClose}
       />

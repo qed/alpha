@@ -86,6 +86,30 @@ describe("CopilotCard", () => {
     );
   });
 
+  it("suppresses rule 3 when concern has been addressed via library send", () => {
+    const { container } = render(
+      <CopilotCard
+        prospect={makeProspect({
+          concerns: ["tuition"],
+          engagement_signals: ["faq"],
+          librarySends: [
+            {
+              id: "send-1",
+              library_item_id: "item-1",
+              concern: "tuition",
+              channel: "in-app",
+              sent_at: "2026-05-01T12:00:00Z",
+            },
+          ],
+        })}
+      />
+    );
+
+    expect(container.textContent).not.toContain(
+      'Send a library item addressing "Tuition" concern.'
+    );
+  });
+
   it('shows "New prospect" empty state when prospect has no concerns AND no signals', () => {
     const { container } = render(
       <CopilotCard

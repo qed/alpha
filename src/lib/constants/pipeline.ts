@@ -97,4 +97,3 @@ export const SIGNAL_LABELS: Record<EngagementSignal, string> = {
   shadow: "Booked shadow day",
 };
 
-export const LIBRARY_UI_ENABLED = true;

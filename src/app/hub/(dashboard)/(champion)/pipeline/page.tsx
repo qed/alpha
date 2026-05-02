@@ -137,11 +137,15 @@ export default async function PipelinePage({
         notes: notes ?? [],
         statusHistory: statusHistory ?? [],
         auditEntries: auditEntries ?? [],
-        librarySends: (librarySends ?? []).map((s: any) => ({
-          ...s,
-          concern: s.library_items?.concern ?? null,
-          library_items: undefined,
-        })),
+        librarySends: (librarySends ?? []).map(
+          (s: { id: string; library_item_id: string; channel: string; sent_at: string; library_items: { concern: string | null }[] }) => ({
+            id: s.id,
+            library_item_id: s.library_item_id,
+            channel: s.channel,
+            sent_at: s.sent_at,
+            concern: s.library_items?.[0]?.concern ?? null,
+          })
+        ),
         libraryItems: libraryItems ?? [],
       } as SelectedProspect;
     }

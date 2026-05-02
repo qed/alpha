@@ -20,6 +20,7 @@ const TYPE_LABELS: Record<string, string> = {
 interface LibrarySendPanelProps {
   libraryItems: LibraryItem[];
   librarySends: DrawerLibrarySend[];
+  prospectConcerns: string[];
   prospectId: string;
   onClose: () => void;
 }
@@ -27,6 +28,7 @@ interface LibrarySendPanelProps {
 export function LibrarySendPanel({
   libraryItems,
   librarySends,
+  prospectConcerns,
   prospectId,
   onClose,
 }: LibrarySendPanelProps) {
@@ -71,10 +73,12 @@ export function LibrarySendPanel({
     [prospectId, router, showToast]
   );
 
-  // Filter out items with null concern, then group by concern
+  const concernSet = new Set(prospectConcerns);
+
+  // Filter to items matching the prospect's concerns, then group by concern
   const itemsByConcern = new Map<string, LibraryItem[]>();
   for (const item of libraryItems) {
-    if (item.concern === null) continue;
+    if (item.concern === null || !concernSet.has(item.concern)) continue;
     const existing = itemsByConcern.get(item.concern);
     if (existing) {
       existing.push(item);

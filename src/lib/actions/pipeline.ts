@@ -2,6 +2,7 @@
 
 import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createPipelineProspectSchema,
   toggleSignalSchema,
@@ -364,8 +365,15 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     return { success: false, error: "Failed to record library send." };
   }
 
-  // Increment send_count on the library item
+  // Update last_touch_at on prospect
   await supabase
+    .from("prospects")
+    .update({ last_touch_at: new Date().toISOString() })
+    .eq("id", prospect_id);
+
+  // Increment send_count via admin client (no RLS UPDATE policy on library_items)
+  const adminClient = getSupabaseAdminClient();
+  await adminClient
     .from("library_items")
     .update({ send_count: item.send_count + 1 })
     .eq("id", library_item_id);

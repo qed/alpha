@@ -7,8 +7,9 @@ const nextConfig: NextConfig = {
       { source: "/sign-in", destination: "/hub/sign-in", permanent: true },
       { source: "/sign-in/:path*", destination: "/hub/sign-in/:path*", permanent: true },
       { source: "/leaderboard", destination: "/hub/leaderboard", permanent: true },
-      { source: "/prospects", destination: "/hub/prospects", permanent: true },
-      { source: "/prospects/:path*", destination: "/hub/prospects/:path*", permanent: true },
+      { source: "/prospects", destination: "/hub/pipeline", permanent: true },
+      { source: "/prospects/:path*", destination: "/hub/pipeline", permanent: true },
+      { source: "/hub/prospects", destination: "/hub/pipeline", permanent: true },
       { source: "/champions", destination: "/hub/champions", permanent: true },
       { source: "/geography/:path*", destination: "/hub/geography/:path*", permanent: true },
     ];

@@ -51,7 +51,7 @@ export function ProspectTable({ prospects }: ProspectTableProps) {
           header: "Name",
           cell: (info) => (
             <Link
-              href={`/hub/prospects/${info.row.original.id}`}
+              href={`/hub/pipeline?prospect=${info.row.original.id}`}
               className="text-alpha-blue hover:underline font-medium"
             >
               {info.getValue()}

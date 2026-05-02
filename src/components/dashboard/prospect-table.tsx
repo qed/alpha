@@ -19,7 +19,7 @@ export interface ProspectRow {
   id: string;
   parent_first: string;
   parent_last: string;
-  parent_email: string;
+  parent_email: string | null;
   status: PipelineStage;
   follow_up_date: string | null;
   created_at: string;
@@ -51,7 +51,7 @@ export function ProspectTable({ prospects }: ProspectTableProps) {
           header: "Name",
           cell: (info) => (
             <Link
-              href={`/hub/prospects/${info.row.original.id}`}
+              href={`/hub/pipeline?prospect=${info.row.original.id}`}
               className="text-alpha-blue hover:underline font-medium"
             >
               {info.getValue()}
@@ -62,7 +62,7 @@ export function ProspectTable({ prospects }: ProspectTableProps) {
       columnHelper.accessor("parent_email", {
         header: "Email",
         cell: (info) => (
-          <span className="text-ink-3 text-sm">{info.getValue()}</span>
+          <span className="text-ink-3 text-sm">{info.getValue() ?? "—"}</span>
         ),
       }),
       columnHelper.accessor("status", {
@@ -97,7 +97,7 @@ export function ProspectTable({ prospects }: ProspectTableProps) {
     const search = (filterValue as string).toLowerCase();
     const name =
       `${row.original.parent_first} ${row.original.parent_last}`.toLowerCase();
-    const email = row.original.parent_email.toLowerCase();
+    const email = row.original.parent_email?.toLowerCase() ?? "";
     return name.includes(search) || email.includes(search);
   };
 

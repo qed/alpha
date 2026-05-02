@@ -51,10 +51,10 @@ export default async function DashboardLayout({
             </>
           )}
           <Link
-            href={isAdmin ? "/hub/leaderboard" : "/hub/prospects"}
+            href={isAdmin ? "/hub/leaderboard" : "/hub/pipeline"}
             className="text-sm text-ink-3 hover:text-ink no-underline"
           >
-            {isAdmin ? "All Geographies" : "Prospects"}
+            {isAdmin ? "All Geographies" : "Pipeline"}
           </Link>
         </nav>
         <UserButton />

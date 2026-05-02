@@ -14,6 +14,7 @@ describe("next.config redirects", () => {
     expect(sources).toContain("/leaderboard");
     expect(sources).toContain("/prospects");
     expect(sources).toContain("/prospects/:path*");
+    expect(sources).toContain("/hub/prospects");
     expect(sources).toContain("/champions");
     expect(sources).toContain("/geography/:path*");
 
@@ -21,6 +22,19 @@ describe("next.config redirects", () => {
       expect(redirect.permanent).toBe(true);
       expect(redirect.destination).toMatch(/^\/hub\//);
     }
+  });
+
+  it("redirects /prospects and /hub/prospects to /hub/pipeline", async () => {
+    const redirects =
+      typeof nextConfig.redirects === "function"
+        ? await nextConfig.redirects()
+        : [];
+
+    const prospectsRedirect = redirects.find((r) => r.source === "/prospects");
+    expect(prospectsRedirect?.destination).toBe("/hub/pipeline");
+
+    const hubProspectsRedirect = redirects.find((r) => r.source === "/hub/prospects");
+    expect(hubProspectsRedirect?.destination).toBe("/hub/pipeline");
   });
 
   it("does not redirect public intake routes", async () => {

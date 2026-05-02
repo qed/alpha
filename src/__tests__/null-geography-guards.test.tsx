@@ -71,10 +71,24 @@ vi.mock("@/components/dashboard/new-prospect-form", () => ({
   NewProspectForm: () => <div>NewProspectForm</div>,
 }));
 
+vi.mock("@/lib/supabase/admin", () => ({
+  getSupabaseAdminClient: () => ({
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          order: () => ({ data: [] }),
+        }),
+      }),
+    }),
+  }),
+}));
+
+vi.mock("@/components/dashboard/pipeline-shell", () => ({
+  PipelineShell: () => <div>PipelineShell</div>,
+}));
+
 import DashboardPage from "@/app/hub/(dashboard)/(champion)/dashboard/page";
-import ProspectsPage from "@/app/hub/(dashboard)/(champion)/prospects/page";
-import ProspectDetailPage from "@/app/hub/(dashboard)/(champion)/prospects/[id]/page";
-import NewProspectPage from "@/app/hub/(dashboard)/(champion)/prospects/new/page";
+import PipelinePage from "@/app/hub/(dashboard)/(champion)/pipeline/page";
 
 describe("null geography guards", () => {
   beforeEach(() => {
@@ -96,7 +110,7 @@ describe("null geography guards", () => {
     });
   });
 
-  describe("prospects page", () => {
+  describe("pipeline page", () => {
     it("shows GeographyPicker when geographyId is null", async () => {
       mockRequireAuthenticated.mockResolvedValue({
         userId: "user_1",
@@ -104,51 +118,11 @@ describe("null geography guards", () => {
         geographyId: null,
       });
 
-      const page = await ProspectsPage();
-      render(page);
-      expect(screen.getByText("Select your geography")).toBeInTheDocument();
-    });
-  });
-
-  describe("prospect detail page", () => {
-    it("shows GeographyPicker when geographyId is null", async () => {
-      mockRequireAuthenticated.mockResolvedValue({
-        userId: "user_1",
-        role: "champion",
-        geographyId: null,
-      });
-
-      const page = await ProspectDetailPage({
-        params: Promise.resolve({ id: "test-id" }),
+      const page = await PipelinePage({
+        searchParams: Promise.resolve({}),
       });
       render(page);
       expect(screen.getByText("Select your geography")).toBeInTheDocument();
-    });
-  });
-
-  describe("new prospect page", () => {
-    it("shows GeographyPicker when geographyId is null", async () => {
-      mockRequireAuthenticated.mockResolvedValue({
-        userId: "user_1",
-        role: "champion",
-        geographyId: null,
-      });
-
-      const page = await NewProspectPage();
-      render(page);
-      expect(screen.getByText("Select your geography")).toBeInTheDocument();
-    });
-
-    it("shows form when geographyId is set", async () => {
-      mockRequireAuthenticated.mockResolvedValue({
-        userId: "user_1",
-        role: "champion",
-        geographyId: "geo-1",
-      });
-
-      const page = await NewProspectPage();
-      render(page);
-      expect(screen.getByText("NewProspectForm")).toBeInTheDocument();
     });
   });
 });

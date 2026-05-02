@@ -1,7 +1,5 @@
 import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { GeographyPicker } from "@/components/dashboard/geography-picker";
-import { getAvailableGeographies } from "@/lib/queries/geographies";
 import {
   PipelineShell,
   type SelectedProspect,
@@ -15,12 +13,6 @@ export default async function PipelinePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await requireAuthenticated();
-
-  if (!session.geographyId) {
-    const geographies = await getAvailableGeographies();
-    return <GeographyPicker geographies={geographies} />;
-  }
-
   const supabase = getSupabaseAdminClient();
 
   // Fetch all prospects for geography

@@ -105,10 +105,6 @@ export async function selectGeography(
   try {
     const session = await requireAuthenticated();
 
-    if (session.role !== "champion") {
-      return { success: false, error: "Only champions can select a geography." };
-    }
-
     const parsed = selectGeographySchema.safeParse(input);
     if (!parsed.success) {
       return { success: false, error: "Invalid input." };
@@ -165,10 +161,6 @@ export async function createGeography(
 ): Promise<ActionResult> {
   try {
     const session = await requireAuthenticated();
-
-    if (session.role !== "champion") {
-      return { success: false, error: "Only champions can create a geography." };
-    }
 
     const parsed = createGeographySchema.safeParse(input);
     if (!parsed.success) {

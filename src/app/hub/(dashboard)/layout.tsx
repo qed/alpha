@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
+import { requireAuth } from "@/lib/auth";
+import { getAvailableGeographies } from "@/lib/queries/geographies";
+import { GeographyPicker } from "@/components/dashboard/geography-picker";
 
 export const metadata: Metadata = {
   title: "Alpha Hub",
@@ -15,14 +16,27 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId, sessionClaims } = await auth();
+  const session = await requireAuth();
+  const isAdmin = session.role === "admin";
 
-  if (!userId) {
-    redirect("/hub");
+  if (!session.geographyId) {
+    const geographies = await getAvailableGeographies();
+    return (
+      <div className="min-h-screen flex flex-col bg-paper-2">
+        <header className="bg-paper border-b border-line px-6 py-3 flex items-center justify-between">
+          <nav className="flex items-center gap-6">
+            <span className="font-[family-name:var(--font-display)] text-lg font-bold text-ink">
+              Alpha Hub
+            </span>
+          </nav>
+          <UserButton />
+        </header>
+        <main className="flex-1 px-6 py-8 max-w-7xl mx-auto w-full">
+          <GeographyPicker geographies={geographies} />
+        </main>
+      </div>
+    );
   }
-
-  const role = sessionClaims?.role as string | undefined;
-  const isAdmin = role === "admin";
 
   return (
     <div className="min-h-screen flex flex-col bg-paper-2">

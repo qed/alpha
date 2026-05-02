@@ -104,7 +104,7 @@ describe("LibrarySendPanel", () => {
     ).toBeInTheDocument();
   });
 
-  it("only shows items matching the prospect's concerns", () => {
+  it("only shows accordion headers matching the prospect's concerns", () => {
     const tuitionItem = makeLibraryItem({ concern: "tuition", title: "Tuition FAQ" });
     const paceItem = makeLibraryItem({ concern: "pace", title: "Pace FAQ" });
     const socialItem = makeLibraryItem({ concern: "socialization", title: "Social FAQ" });
@@ -119,12 +119,12 @@ describe("LibrarySendPanel", () => {
       />
     );
 
-    expect(screen.getByText("Tuition FAQ")).toBeInTheDocument();
-    expect(screen.getByText("Pace FAQ")).toBeInTheDocument();
-    expect(screen.queryByText("Social FAQ")).not.toBeInTheDocument();
+    expect(screen.getByText(CONCERN_LABELS["tuition" as Concern])).toBeInTheDocument();
+    expect(screen.getByText(CONCERN_LABELS["pace" as Concern])).toBeInTheDocument();
+    expect(screen.queryByText(CONCERN_LABELS["socialization" as Concern])).not.toBeInTheDocument();
   });
 
-  it("each item shows title, type badge text, and body content", () => {
+  it("expanding an accordion reveals item title, type badge, and body", () => {
     const item = makeLibraryItem({
       title: "Financial Aid Overview",
       type: "talking",
@@ -135,11 +135,17 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
+
+    // Items hidden by default
+    expect(screen.queryByText("Financial Aid Overview")).not.toBeInTheDocument();
+
+    // Click accordion to expand
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
 
     expect(screen.getByText("Financial Aid Overview")).toBeInTheDocument();
     expect(screen.getByText("Talking Point")).toBeInTheDocument();
@@ -155,12 +161,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
 
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
     const btn = screen.getByRole("button", { name: "Mark as sent" });
     fireEvent.click(btn);
 
@@ -179,12 +186,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
 
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
     const btn = screen.getByRole("button", { name: "Mark as sent" });
     fireEvent.click(btn);
 
@@ -203,12 +211,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[send]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["pace"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
 
+    fireEvent.click(screen.getByText(CONCERN_LABELS["pace" as Concern]));
     const sentBtn = screen.getByRole("button", { name: /Sent/ });
     expect(sentBtn).toBeDisabled();
   });
@@ -288,12 +297,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
 
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
     const btn = screen.getByRole("button", { name: "Mark as sent" });
     fireEvent.click(btn);
 
@@ -314,12 +324,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={[item]}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
 
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
     const btn = screen.getByRole("button", { name: "Mark as sent" });
     fireEvent.click(btn);
 
@@ -357,11 +368,13 @@ describe("LibrarySendPanel", () => {
       <LibrarySendPanel
         libraryItems={items}
         librarySends={[]}
-        prospectConcerns={["tuition", "pace", "screen-time", "socialization", "accreditation", "transcripts", "religion", "spouse-buy-in"]}
+        prospectConcerns={["tuition"]}
         prospectId={prospectId}
         onClose={onClose}
       />
     );
+
+    fireEvent.click(screen.getByText(CONCERN_LABELS["tuition" as Concern]));
 
     expect(screen.getByText("FAQ")).toBeInTheDocument();
     expect(screen.getByText("Talking Point")).toBeInTheDocument();

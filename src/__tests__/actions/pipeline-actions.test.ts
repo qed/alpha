@@ -127,9 +127,12 @@ import {
 const VALID_UUID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 const SESSION_GEO = "geo_1";
 
+const PROFILE_ID = "c1ffbc99-9c0b-4ef8-bb6d-6bb9bd380c33";
+
 function defaultSession(overrides: Record<string, unknown> = {}) {
   return {
     userId: "user_1",
+    profileId: PROFILE_ID,
     role: "champion",
     geographyId: SESSION_GEO,
     ...overrides,
@@ -186,7 +189,7 @@ describe("createPipelineProspect", () => {
 
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "prospect-create",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,
@@ -362,7 +365,7 @@ describe("toggleSignal", () => {
 
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "signal-toggle",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,
@@ -512,7 +515,7 @@ describe("updateConcerns", () => {
 
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "concern-update",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,
@@ -656,7 +659,7 @@ describe("overrideHeat", () => {
 
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "heat-override",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,
@@ -799,7 +802,7 @@ describe("addPipelineNote", () => {
     expect(mockNoteInsert).toHaveBeenCalledWith({
       prospect_id: VALID_UUID,
       geography_id: SESSION_GEO,
-      author_id: "user_1",
+      author_id: PROFILE_ID,
       body: "Spoke with parent about tuition options.",
     });
   });
@@ -826,7 +829,7 @@ describe("addPipelineNote", () => {
 
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "note-add",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,
@@ -992,7 +995,7 @@ describe("recordLibrarySend", () => {
     expect(mockLibrarySendInsert).toHaveBeenCalledWith({
       library_item_id: LIBRARY_ITEM_UUID,
       prospect_id: VALID_UUID,
-      champion_id: "user_1",
+      champion_id: PROFILE_ID,
       geography_id: SESSION_GEO,
       channel: "in-app",
     });
@@ -1008,7 +1011,7 @@ describe("recordLibrarySend", () => {
     // Verify audit log
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "user_1",
+        actor_id: PROFILE_ID,
         action: "library-send",
         geography_id: SESSION_GEO,
         prospect_id: VALID_UUID,

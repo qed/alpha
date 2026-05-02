@@ -76,11 +76,11 @@ export async function updateProspectStatus(
     geography_id: session.geographyId,
     old_status: prospect.status,
     new_status,
-    changed_by: session.userId,
+    changed_by: session.profileId,
   });
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "status-change",
     geography_id: session.geographyId,
     prospect_id,
@@ -90,7 +90,7 @@ export async function updateProspectStatus(
     },
   });
 
-  await checkAutoPromotion(session.geographyId, session.userId);
+  await checkAutoPromotion(session.geographyId, session.profileId);
 
   return { success: true };
 }
@@ -121,7 +121,7 @@ export async function addNote(data: unknown): Promise<ActionResult> {
   const { error } = await supabase.from("notes").insert({
     prospect_id,
     geography_id: session.geographyId,
-    author_id: session.userId,
+    author_id: session.profileId,
     body,
   });
 
@@ -130,7 +130,7 @@ export async function addNote(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "note-add",
     geography_id: session.geographyId,
     prospect_id,
@@ -227,7 +227,7 @@ export async function createProspect(data: unknown): Promise<ActionResult & { pr
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "prospect-create",
     geography_id: session.geographyId,
     prospect_id: prospect.id,
@@ -321,7 +321,7 @@ export async function deleteProspect(
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "prospect-delete",
     geography_id: prospect.geography_id,
     prospect_id: prospectId,

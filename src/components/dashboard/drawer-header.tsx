@@ -191,7 +191,7 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
           onClick={() => setLibraryPanelOpen(true)}
           className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
         >
-          Send from library
+          Answers to concerns
         </button>
       </div>
 

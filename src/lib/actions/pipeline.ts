@@ -53,7 +53,7 @@ export async function createPipelineProspect(
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "prospect-create",
     geography_id: session.geographyId,
     prospect_id: prospect.id,
@@ -122,7 +122,7 @@ export async function toggleSignal(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "signal-toggle",
     geography_id: session.geographyId,
     prospect_id,
@@ -177,7 +177,7 @@ export async function updateConcerns(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "concern-update",
     geography_id: session.geographyId,
     prospect_id,
@@ -234,7 +234,7 @@ export async function overrideHeat(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "heat-override",
     geography_id: session.geographyId,
     prospect_id,
@@ -279,7 +279,7 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
   const { error: noteError } = await supabase.from("notes").insert({
     prospect_id,
     geography_id: session.geographyId,
-    author_id: session.userId,
+    author_id: session.profileId,
     body,
   });
 
@@ -293,7 +293,7 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
     .eq("id", prospect_id);
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "note-add",
     geography_id: session.geographyId,
     prospect_id,
@@ -355,7 +355,7 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
   const { error: sendError } = await supabase.from("library_sends").insert({
     library_item_id,
     prospect_id,
-    champion_id: session.userId,
+    champion_id: session.profileId,
     geography_id: session.geographyId,
     channel: "in-app",
   });
@@ -378,7 +378,7 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
 
   // Audit log
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "library-send",
     geography_id: session.geographyId,
     prospect_id,

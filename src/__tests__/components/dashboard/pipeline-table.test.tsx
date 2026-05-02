@@ -167,7 +167,7 @@ describe("PipelineTable", () => {
 
     const row = container.querySelector("tbody tr");
     expect(row?.textContent).toContain(
-      'Send a library item addressing "Tuition" concern.'
+      'Send an answer addressing "Tuition" concern.'
     );
   });
 

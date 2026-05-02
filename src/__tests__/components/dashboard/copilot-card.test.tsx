@@ -82,7 +82,7 @@ describe("CopilotCard", () => {
     );
 
     expect(container.textContent).toContain(
-      'Send a library item addressing "Tuition" concern.'
+      'Send an answer addressing "Tuition" concern.'
     );
   });
 
@@ -106,7 +106,7 @@ describe("CopilotCard", () => {
     );
 
     expect(container.textContent).not.toContain(
-      'Send a library item addressing "Tuition" concern.'
+      'Send an answer addressing "Tuition" concern.'
     );
   });
 

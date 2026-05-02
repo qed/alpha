@@ -33,7 +33,7 @@ export interface ProspectDetailData {
   id: string;
   parent_first: string;
   parent_last: string;
-  parent_email: string;
+  parent_email: string | null;
   parent_phone: string | null;
   spouse_name: string | null;
   source: string | null;
@@ -111,7 +111,9 @@ export function ProspectDetail({ prospect }: ProspectDetailProps) {
             <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-ink">
               {prospect.parent_first} {prospect.parent_last}
             </h2>
-            <p className="text-sm text-ink-3 mt-1">{prospect.parent_email}</p>
+            {prospect.parent_email && (
+              <p className="text-sm text-ink-3 mt-1">{prospect.parent_email}</p>
+            )}
             {prospect.parent_phone && (
               <p className="text-sm text-ink-3">{prospect.parent_phone}</p>
             )}

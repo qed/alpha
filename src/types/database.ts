@@ -30,7 +30,7 @@ export interface DbProspect {
   geography_id: string;
   parent_first: string;
   parent_last: string;
-  parent_email: string;
+  parent_email: string | null;
   parent_phone: string | null;
   spouse_name: string | null;
   source: string | null;
@@ -39,6 +39,11 @@ export interface DbProspect {
   first_responded_at: string | null;
   consent_given: boolean;
   consent_at: string | null;
+  heat_score: number;
+  concerns: string[];
+  engagement_signals: string[];
+  last_touch_at: string;
+  neighborhood: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -73,6 +78,29 @@ export interface DbStatusHistory {
   changed_at: string;
 }
 
+export interface DbLibraryItem {
+  id: string;
+  type: "faq" | "quote" | "talking" | "data";
+  title: string;
+  body: string;
+  concern: string | null;
+  helpfulness_score: number;
+  send_count: number;
+  geography_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbLibrarySend {
+  id: string;
+  library_item_id: string;
+  prospect_id: string;
+  champion_id: string;
+  geography_id: string;
+  channel: string;
+  sent_at: string;
+}
+
 export type AuditAction =
   | "drill-down"
   | "status-change"
@@ -83,7 +111,10 @@ export type AuditAction =
   | "champion-deactivate"
   | "champion-reassign"
   | "geography-select"
-  | "geography-create";
+  | "geography-create"
+  | "signal-toggle"
+  | "concern-update"
+  | "heat-override";
 
 export interface DbAuditLog {
   id: string;

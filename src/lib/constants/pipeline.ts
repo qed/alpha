@@ -52,3 +52,49 @@ export function isEnrollmentStage(stage: PipelineStage): boolean {
 }
 
 export const ENROLLMENT_THRESHOLD = 25;
+
+export const CONCERNS = [
+  "tuition",
+  "pace",
+  "accreditation",
+  "screen-time",
+  "socialization",
+  "transcripts",
+  "religion",
+  "spouse-buy-in",
+] as const;
+
+export type Concern = (typeof CONCERNS)[number];
+
+export const CONCERN_LABELS: Record<Concern, string> = {
+  tuition: "Tuition",
+  pace: "Pace",
+  accreditation: "Accreditation",
+  "screen-time": "Screen Time",
+  socialization: "Socialization",
+  transcripts: "Transcripts",
+  religion: "Religion",
+  "spouse-buy-in": "Spouse Buy-in",
+};
+
+export const ENGAGEMENT_SIGNALS = [
+  "faq",
+  "1-1",
+  "intro",
+  "deposit",
+  "tour",
+  "shadow",
+] as const;
+
+export type EngagementSignal = (typeof ENGAGEMENT_SIGNALS)[number];
+
+export const SIGNAL_LABELS: Record<EngagementSignal, string> = {
+  faq: "Sent FAQ",
+  "1-1": "1:1 conversation",
+  intro: "Introduced to parent",
+  deposit: "Shared deposit link",
+  tour: "Toured campus",
+  shadow: "Booked shadow day",
+};
+
+export const LIBRARY_UI_ENABLED = false;

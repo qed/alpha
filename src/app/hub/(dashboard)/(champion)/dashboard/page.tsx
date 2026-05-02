@@ -8,17 +8,9 @@ import {
 } from "@/components/dashboard/activity-feed";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { CopyLinkButton } from "@/components/dashboard/copy-link-button";
-import { GeographyPicker } from "@/components/dashboard/geography-picker";
-import { getAvailableGeographies } from "@/lib/queries/geographies";
 
 export default async function ChampionDashboardPage() {
   const session = await requireAuthenticated();
-
-  if (!session.geographyId) {
-    const geographies = await getAvailableGeographies();
-    return <GeographyPicker geographies={geographies} />;
-  }
-
   const supabase = getSupabaseAdminClient();
 
   const { data: geography } = await supabase

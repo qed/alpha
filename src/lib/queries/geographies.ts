@@ -17,15 +17,14 @@ export async function getAvailableGeographies(): Promise<AvailableGeography[]> {
 
   if (!geographies) return [];
 
-  const { data: activeChampions } = await supabase
+  const { data: activeUsers } = await supabase
     .from("profiles")
     .select("geography_id")
-    .eq("role", "champion")
     .eq("is_active", true)
     .not("geography_id", "is", null);
 
   const claimed = new Set(
-    (activeChampions || []).map((p) => p.geography_id)
+    (activeUsers || []).map((p) => p.geography_id)
   );
 
   return geographies.filter((g) => !claimed.has(g.id));

@@ -114,7 +114,8 @@ export type AuditAction =
   | "geography-create"
   | "signal-toggle"
   | "concern-update"
-  | "heat-override";
+  | "heat-override"
+  | "library-send";
 
 export interface DbAuditLog {
   id: string;

@@ -6,13 +6,13 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import {
   ALLOWED_TRANSITIONS,
   STAGE_LABELS,
-  LIBRARY_UI_ENABLED,
   type PipelineStage,
 } from "@/lib/constants/pipeline";
 import { updateProspectStatus } from "@/lib/actions/prospects";
 import { overrideHeat } from "@/lib/actions/pipeline";
 import { HeatPips } from "./heat-pips";
 import { suggestHeat } from "@/lib/pipeline/copilot-engine";
+import { LibrarySendPanel } from "./library-send-panel";
 import type { SelectedProspectDetail } from "./contact-drawer";
 
 interface DrawerHeaderProps {
@@ -48,6 +48,7 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [libraryPanelOpen, setLibraryPanelOpen] = useState(false);
 
   const allowedTransitions = ALLOWED_TRANSITIONS[prospect.status];
 
@@ -185,16 +186,25 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
           Log activity
         </button>
 
-        {/* Send from library - hidden when flag is false */}
-        {LIBRARY_UI_ENABLED && (
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
-          >
-            Send from library
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setLibraryPanelOpen(true)}
+          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
+        >
+          Answers to concerns
+        </button>
       </div>
+
+      {/* Library Send Panel */}
+      {libraryPanelOpen && (
+        <LibrarySendPanel
+          libraryItems={prospect.libraryItems}
+          librarySends={prospect.librarySends}
+          prospectConcerns={prospect.concerns}
+          prospectId={prospect.id}
+          onClose={() => setLibraryPanelOpen(false)}
+        />
+      )}
     </div>
   );
 }

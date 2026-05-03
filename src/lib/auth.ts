@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export interface SessionInfo {
   userId: string;
+  profileId: string;
   role: "admin" | "champion";
   geographyId: string | null;
 }
@@ -18,14 +19,18 @@ export async function requireAuth(): Promise<SessionInfo> {
   const supabase = getSupabaseAdminClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, geography_id")
+    .select("id, role, geography_id")
     .eq("clerk_user_id", userId)
     .maybeSingle();
 
-  const role = profile?.role === "admin" ? "admin" : "champion";
-  const geographyId = profile?.geography_id ?? null;
+  if (!profile) {
+    redirect("/hub");
+  }
 
-  return { userId, role, geographyId };
+  const role = profile.role === "admin" ? "admin" : "champion";
+  const geographyId = profile.geography_id ?? null;
+
+  return { userId, profileId: profile.id, role, geographyId };
 }
 
 export async function requireAdmin(): Promise<SessionInfo> {

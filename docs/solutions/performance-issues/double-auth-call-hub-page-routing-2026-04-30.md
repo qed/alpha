@@ -59,6 +59,8 @@ if (userId) {
 }
 ```
 
+**Caveat:** This approach reads `role` from Clerk session claims, which is acceptable for lightweight routing decisions on the public hub page. However, for authoritative role/geography checks on dashboard pages, always read from Supabase (the auth source of truth) via `requireAuth()` -- Clerk session claims can return unprocessed template strings. See [Clerk+Supabase cascade failure](../integration-issues/clerk-supabase-vercel-auth-cascade-failure-2026-05-01.md) for details.
+
 ## Why This Works
 
 The hub page only needs to make a routing decision (which dashboard to redirect to) -- it doesn't need the full validated `SessionInfo` object that `requireAuth()` provides. Reading `sessionClaims` directly from the single `auth()` call is sufficient for determining admin vs champion routing. The heavier `requireAuth()` with its role validation and defaults is reserved for pages that actually render content requiring a validated session.

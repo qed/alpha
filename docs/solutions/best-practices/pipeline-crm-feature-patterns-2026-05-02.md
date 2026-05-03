@@ -1,6 +1,7 @@
 ---
 title: Pipeline CRM Feature Patterns
 date: "2026-05-02"
+last_updated: "2026-05-02"
 category: best-practices
 module: pipeline-crm
 problem_type: best_practice
@@ -152,20 +153,20 @@ Every server action follows an identical 6-step sequence:
 Key rules:
 - Accept `data: unknown`, never trust the caller's type.
 - Every mutation sets `last_touch_at = new Date().toISOString()`.
-- `session.userId` (Clerk user ID) is used directly for `actor_id`/`author_id` -- matches the existing codebase pattern.
+- Use `session.profileId` (Supabase `profiles.id` UUID) for FK columns like `actor_id`/`author_id`/`champion_id`. Never use `session.userId` (Clerk user ID string) — it's not a UUID and will cause FK constraint violations.
 - Return a uniform `{ success: boolean; error?: string }` shape.
 - Ownership check: `prospect.geography_id !== session.geographyId` returns "Access denied."
 
-### Pattern 6: Dual Supabase client strategy
+### Pattern 6: Supabase client strategy
 
-In a Clerk-authenticated app with no Supabase auth session:
+In a Clerk-authenticated app with no Supabase auth session, use `getSupabaseAdminClient()` for **all** database operations — both reads and writes:
 
 | Context | Client | Why |
 |---------|--------|-----|
 | Server component reads | `getSupabaseAdminClient()` | Bypasses RLS (no Supabase session exists for Clerk-authenticated users) |
-| Server action writes | `getSupabaseServerClient()` | Uses service role for authorized mutations behind Clerk auth gate |
+| Server action writes | `getSupabaseAdminClient()` | Same reason — anon client (`getSupabaseServerClient()`) is subject to RLS which blocks all operations when there's no Supabase auth session |
 
-Never attempt RLS-based access control with Clerk tokens. Enforce authorization in application code: `requireAuthenticated()` for identity, geography guard for tenancy, ownership check for row-level access. (auto memory [claude])
+Never use `getSupabaseServerClient()` (anon key) in a Clerk-authenticated app. Never attempt RLS-based access control with Clerk tokens. Enforce authorization in application code: `requireAuthenticated()` for identity, geography guard for tenancy, ownership check for row-level access.
 
 ### Pattern 7: View preference persistence
 
@@ -216,8 +217,8 @@ export async function archiveProspect(data: unknown): Promise<ActionResult> {
   if (!session.geographyId) return { success: false, error: "No geography assigned." };
   const parsed = archiveProspectSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: "Invalid input." };
-  const supabase = await getSupabaseServerClient();
-  // ... ownership check, mutation, audit_log.insert, return { success: true }
+  const supabase = getSupabaseAdminClient();
+  // ... ownership check, mutation (use session.profileId for FKs), audit_log.insert, return { success: true }
 }
 ```
 

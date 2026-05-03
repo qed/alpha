@@ -103,22 +103,10 @@ The auth guard now only validates what its name implies -- authentication. Geogr
 - Auth guard functions should only validate what their name implies -- don't overload `requireChampion()` with geography validation when its callers expect authentication
 - When adding redirect-based auth guards, trace the full redirect chain (page -> layout -> middleware -> Clerk -> back) to check for loops
 - Always test the "new user with no data" path -- users who just signed up often have incomplete profiles
-- Add explicit test cases for null/missing session claim fields:
-
-```typescript
-it("shows pending state when geographyId is null", async () => {
-  mockRequireAuthenticated.mockResolvedValue({
-    userId: "user_1",
-    role: "champion",
-    geographyId: null,
-  });
-  const page = await DashboardPage();
-  render(page);
-  expect(screen.getByText("Almost there!")).toBeInTheDocument();
-});
-```
+- **Prefer layout-level gates over per-page checks** -- the per-page geography guards shown in this doc's solution were later consolidated into a single layout-level gate that renders the GeographyPicker inline, eliminating duplication and covering all current and future child routes automatically. See [layout-level data gate pattern](../best-practices/layout-level-data-gate-geography-picker-2026-05-02.md) for the consolidated approach.
 
 ## Related Issues
 
 - [docs/solutions/runtime-errors/clerk-v7-auth-requires-middleware-2026-04-29.md](../runtime-errors/clerk-v7-auth-requires-middleware-2026-04-29.md) -- Clerk v7 middleware requirement (related auth context)
 - [docs/plans/2026-04-29-003-feat-hub-welcome-page-plan.md](../../plans/2026-04-29-003-feat-hub-welcome-page-plan.md) -- Plan that identified and scoped this fix (Unit 3)
+- [docs/solutions/best-practices/layout-level-data-gate-geography-picker-2026-05-02.md](../best-practices/layout-level-data-gate-geography-picker-2026-05-02.md) -- Consolidated layout-level gate pattern that supersedes the per-page approach

@@ -8,10 +8,6 @@ vi.mock("@/lib/auth", () => ({
   requireAuthenticated: () => mockRequireAuthenticated(),
 }));
 
-vi.mock("@/lib/supabase/server", () => ({
-  getSupabaseServerClient: () => Promise.resolve({}),
-}));
-
 const mockGeographies = [
   { id: "geo-1", name: "Austin", region: "Texas", country: "US" },
 ];

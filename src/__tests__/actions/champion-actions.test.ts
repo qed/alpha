@@ -12,8 +12,8 @@ let newChampionResult: unknown = null;
 let currentChampionResult: unknown = null;
 let updateResult: unknown = { error: null };
 
-vi.mock("@/lib/supabase/server", () => ({
-  getSupabaseServerClient: () => ({
+vi.mock("@/lib/supabase/admin", () => ({
+  getSupabaseAdminClient: () => ({
     from: (table: string) => {
       if (table === "profiles") {
         return {

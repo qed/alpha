@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAuthenticated } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
   createPipelineProspectSchema,
   toggleSignalSchema,
@@ -32,7 +32,7 @@ export async function createPipelineProspect(
     return { success: false, error: "Invalid input." };
   }
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: insertError } = await supabase
     .from("prospects")
@@ -81,7 +81,7 @@ export async function toggleSignal(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, signal_id, active } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -147,7 +147,7 @@ export async function updateConcerns(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, concerns } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -202,7 +202,7 @@ export async function overrideHeat(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, heat_score } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
@@ -259,7 +259,7 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
   }
 
   const { prospect_id, body } = parsed.data;
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")

@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { clerkClient } from "@clerk/nextjs/server";
 
 interface ActionResult {
@@ -15,7 +15,7 @@ export async function inviteChampion(data: {
   geographyId: string;
 }): Promise<ActionResult> {
   const session = await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: existing } = await supabase
     .from("profiles")
@@ -69,7 +69,7 @@ export async function deactivateChampion(
   profileId: string
 ): Promise<ActionResult> {
   const session = await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -123,7 +123,7 @@ export async function reassignGeography(data: {
   newChampionProfileId: string;
 }): Promise<ActionResult> {
   const session = await requireAdmin();
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: newChampion } = await supabase
     .from("profiles")
@@ -199,7 +199,7 @@ export async function reassignGeography(data: {
 export async function getChampionForGeography(
   geographyId: string
 ): Promise<{ email: string; name: string } | null> {
-  const supabase = await getSupabaseServerClient();
+  const supabase = getSupabaseAdminClient();
 
   const { data: champion } = await supabase
     .from("profiles")

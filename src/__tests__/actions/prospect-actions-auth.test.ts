@@ -7,13 +7,12 @@ vi.mock("@/lib/auth", () => ({
   requireAdmin: () => mockRequireAuthenticated(),
 }));
 
-vi.mock("@/lib/supabase/server", () => ({
-  getSupabaseServerClient: () =>
-    Promise.resolve({
-      from: () => ({
-        select: () => ({ eq: () => ({ single: () => ({ data: null }) }) }),
-      }),
+vi.mock("@/lib/supabase/admin", () => ({
+  getSupabaseAdminClient: () => ({
+    from: () => ({
+      select: () => ({ eq: () => ({ single: () => ({ data: null }) }) }),
     }),
+  }),
 }));
 
 import {

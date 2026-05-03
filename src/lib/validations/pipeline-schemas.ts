@@ -39,8 +39,14 @@ export const addPipelineNoteSchema = z.object({
   body: z.string().min(1).max(2000).transform(stripHtml),
 });
 
+export const recordLibrarySendSchema = z.object({
+  prospect_id: z.string().uuid(),
+  library_item_id: z.string().uuid(),
+});
+
 export type CreatePipelineProspectData = z.infer<typeof createPipelineProspectSchema>;
 export type ToggleSignalData = z.infer<typeof toggleSignalSchema>;
 export type UpdateConcernsData = z.infer<typeof updateConcernsSchema>;
 export type OverrideHeatData = z.infer<typeof overrideHeatSchema>;
 export type AddPipelineNoteData = z.infer<typeof addPipelineNoteSchema>;
+export type RecordLibrarySendData = z.infer<typeof recordLibrarySendSchema>;

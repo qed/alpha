@@ -8,6 +8,7 @@ import {
   updateConcernsSchema,
   overrideHeatSchema,
   addPipelineNoteSchema,
+  recordLibrarySendSchema,
 } from "@/lib/validations/pipeline-schemas";
 
 interface ActionResult {
@@ -52,7 +53,7 @@ export async function createPipelineProspect(
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "prospect-create",
     geography_id: session.geographyId,
     prospect_id: prospect.id,
@@ -121,7 +122,7 @@ export async function toggleSignal(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "signal-toggle",
     geography_id: session.geographyId,
     prospect_id,
@@ -176,7 +177,7 @@ export async function updateConcerns(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "concern-update",
     geography_id: session.geographyId,
     prospect_id,
@@ -233,7 +234,7 @@ export async function overrideHeat(data: unknown): Promise<ActionResult> {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "heat-override",
     geography_id: session.geographyId,
     prospect_id,
@@ -278,7 +279,7 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
   const { error: noteError } = await supabase.from("notes").insert({
     prospect_id,
     geography_id: session.geographyId,
-    author_id: session.userId,
+    author_id: session.profileId,
     body,
   });
 
@@ -292,11 +293,96 @@ export async function addPipelineNote(data: unknown): Promise<ActionResult> {
     .eq("id", prospect_id);
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "note-add",
     geography_id: session.geographyId,
     prospect_id,
     metadata: { body_preview: body.slice(0, 100) },
+  });
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// 6. recordLibrarySend
+// ---------------------------------------------------------------------------
+
+export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
+  const session = await requireAuthenticated();
+  if (!session.geographyId) {
+    return { success: false, error: "No geography assigned." };
+  }
+
+  const parsed = recordLibrarySendSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, error: "Invalid input." };
+  }
+
+  const { prospect_id, library_item_id } = parsed.data;
+  const supabase = getSupabaseAdminClient();
+
+  // Ownership check: verify prospect belongs to champion's geography
+  const { data: prospect, error: fetchError } = await supabase
+    .from("prospects")
+    .select("id, geography_id")
+    .eq("id", prospect_id)
+    .single();
+
+  if (fetchError || !prospect) {
+    return { success: false, error: "Prospect not found." };
+  }
+
+  if (prospect.geography_id !== session.geographyId) {
+    return { success: false, error: "Access denied." };
+  }
+
+  // Verify library item exists and belongs to geography (or is global)
+  const { data: item, error: itemError } = await supabase
+    .from("library_items")
+    .select("id, send_count, geography_id")
+    .eq("id", library_item_id)
+    .single();
+
+  if (itemError || !item) {
+    return { success: false, error: "Library item not found." };
+  }
+
+  if (item.geography_id !== null && item.geography_id !== session.geographyId) {
+    return { success: false, error: "Library item not found." };
+  }
+
+  // Insert the library send record
+  const { error: sendError } = await supabase.from("library_sends").insert({
+    library_item_id,
+    prospect_id,
+    champion_id: session.profileId,
+    geography_id: session.geographyId,
+    channel: "in-app",
+  });
+
+  if (sendError) {
+    return { success: false, error: "Failed to record library send." };
+  }
+
+  // Update last_touch_at on prospect
+  await supabase
+    .from("prospects")
+    .update({ last_touch_at: new Date().toISOString() })
+    .eq("id", prospect_id);
+
+  // Increment send_count on the library item
+  await supabase
+    .from("library_items")
+    .update({ send_count: item.send_count + 1 })
+    .eq("id", library_item_id);
+
+  // Audit log
+  await supabase.from("audit_log").insert({
+    actor_id: session.profileId,
+    action: "library-send",
+    geography_id: session.geographyId,
+    prospect_id,
+    metadata: { library_item_id, prospect_id },
   });
 
   return { success: true };

@@ -56,7 +56,7 @@ export function deriveNextMove(
   if (unaddressedConcern) {
     const label = CONCERN_LABELS[unaddressedConcern as Concern] ?? unaddressedConcern;
     return {
-      message: `Send a library item addressing "${label}" concern.`,
+      message: `Send an answer addressing "${label}" concern.`,
       ruleId: 3,
     };
   }

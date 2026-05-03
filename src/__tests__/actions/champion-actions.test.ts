@@ -66,7 +66,7 @@ import { reassignGeography } from "@/lib/actions/champions";
 describe("reassignGeography — Clerk metadata sync", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockRequireAdmin.mockResolvedValue({ userId: "admin-user-id" });
+    mockRequireAdmin.mockResolvedValue({ userId: "admin-user-id", profileId: "admin-profile-id" });
     newChampionResult = {
       id: "new-champion-id",
       full_name: "New Champion",
@@ -105,7 +105,7 @@ describe("reassignGeography — Clerk metadata sync", () => {
 
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        actor_id: "admin-user-id",
+        actor_id: "admin-profile-id",
         action: "champion-reassign",
         geography_id: "geo-1",
         metadata: {

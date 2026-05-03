@@ -1,7 +1,7 @@
 ---
 title: "feat: Pipeline server action tests, component tests, and library send UI"
 type: feat
-status: active
+status: completed
 date: 2026-05-02
 origin: docs/brainstorms/pipeline-tests-and-library-ui-requirements.md
 ---

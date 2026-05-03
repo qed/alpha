@@ -53,7 +53,7 @@ export async function inviteChampion(data: {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "champion-create",
     geography_id: data.geographyId,
     metadata: {
@@ -106,7 +106,7 @@ export async function deactivateChampion(
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "champion-deactivate",
     geography_id: profile.geography_id,
     metadata: {
@@ -184,7 +184,7 @@ export async function reassignGeography(data: {
   }
 
   await supabase.from("audit_log").insert({
-    actor_id: session.userId,
+    actor_id: session.profileId,
     action: "champion-reassign",
     geography_id: data.geographyId,
     metadata: {

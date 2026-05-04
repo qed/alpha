@@ -44,6 +44,7 @@ export function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
           "error-callback": () => {},
           "expired-callback": () => onVerify(""),
           theme: "light",
+          appearance: "interaction-only",
         });
       }
     };

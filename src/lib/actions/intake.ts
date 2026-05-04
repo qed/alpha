@@ -64,7 +64,7 @@ export async function submitIntakeForm(
     const limiter = getRateLimiter();
     const { success: allowed } = await limiter.limit(ip);
     if (!allowed) {
-      return { success: false, error: "Too many submissions. Please try again later." };
+      return { success: false, error: "Only 5 submissions per hour permitted." };
     }
   } catch {
     // If Redis is unavailable, allow the request but log
@@ -91,18 +91,17 @@ export async function submitIntakeForm(
     p_parent_phone: data.parent_phone || null,
     p_spouse_name: data.spouse_name || null,
     p_source: data.source || null,
-    p_children: JSON.stringify(
-      data.children.map((c) => ({
-        first_name: c.first_name,
-        grade: c.grade || null,
-        age: c.age ?? null,
-        gender: c.gender || null,
-      }))
-    ),
+    p_postal_code: data.postal_code || null,
+    p_children: data.children.map((c) => ({
+      first_name: c.first_name,
+      grade: c.grade || null,
+      age: c.age ?? null,
+      gender: c.gender || null,
+    })),
   });
 
   if (error) {
-    console.error("Intake submission failed:", error);
+    console.error("Intake submission failed:", error.message, error.code);
     return { success: false, error: "Submission failed. Please try again." };
   }
 

@@ -1,4 +1,4 @@
-export const RESERVED_SLUGS = ["v1", "hub", "api", "privacy", "sign-in"] as const;
+export const RESERVED_SLUGS = ["v1", "hub", "api", "privacy", "sign-in", "for-parents"] as const;
 
 export type GeographyStatus = "pre-launch" | "existing-campus" | "active-campus";
 

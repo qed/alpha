@@ -19,6 +19,7 @@ function makeProspect(
     parent_phone: "555-1234",
     spouse_name: null,
     source: null,
+    postal_code: null,
     status: "interested",
     heat_score: 3,
     concerns: ["tuition"],

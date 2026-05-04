@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       { source: "/hub/prospects", destination: "/hub/pipeline", permanent: true },
       { source: "/champions", destination: "/hub/champions", permanent: true },
       { source: "/geography/:path*", destination: "/hub/geography/:path*", permanent: true },
+      { source: "/toronto", destination: "/", permanent: false },
     ];
   },
 };

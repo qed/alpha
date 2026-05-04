@@ -18,10 +18,10 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p className="text-ink-3 leading-relaxed">
             When you submit an enrollment inquiry, we collect: parent/guardian
-            name, email address, phone number (optional), spouse/partner name
-            (optional), and child information (first name, age, grade, gender).
-            We also collect your referral source and a timestamp of your
-            submission.
+            name, email address, phone number (optional), postal code,
+            spouse/partner name (optional), and child information (first name,
+            age, grade, gender). We also collect your referral source and a
+            timestamp of your submission.
           </p>
         </section>
 

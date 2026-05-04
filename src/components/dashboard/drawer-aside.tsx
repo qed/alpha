@@ -105,18 +105,22 @@ export function DrawerAside({ prospect }: DrawerAsideProps) {
               <dd className="text-ink">{prospect.source}</dd>
             </div>
           )}
+          {prospect.postal_code && (
+            <div className="flex gap-2">
+              <dt className="text-ink-4 shrink-0 w-14">Postal</dt>
+              <dd className="text-ink">{prospect.postal_code}</dd>
+            </div>
+          )}
           {prospect.children.length > 0 && (
             <div className="flex gap-2">
               <dt className="text-ink-4 shrink-0 w-14">Kids</dt>
-              <dd className="text-ink">
-                {prospect.children
-                  .map((c) => {
-                    const parts = [c.first_name];
-                    if (c.age) parts.push(`age ${c.age}`);
-                    if (c.grade) parts.push(`grade ${c.grade}`);
-                    return parts.join(", ");
-                  })
-                  .join("; ")}
+              <dd className="text-ink space-y-0.5">
+                {prospect.children.map((c) => (
+                  <div key={c.id}>
+                    {c.first_name}
+                    {c.grade && <span className="text-ink-4"> — Grade {c.grade}</span>}
+                  </div>
+                ))}
               </dd>
             </div>
           )}

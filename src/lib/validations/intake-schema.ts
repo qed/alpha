@@ -23,6 +23,7 @@ export const intakeFormSchema = z.object({
   parent_phone: z.string().max(20).optional().default(""),
   spouse_name: z.string().max(200).transform(stripHtml).optional().default(""),
   source: z.string().max(100).optional().default(""),
+  postal_code: z.string().max(10).transform(stripHtml).optional().default(""),
   children: z.array(childSchema).min(1).max(15),
   consent: z.literal(true, {
     message: "You must agree to the privacy policy",

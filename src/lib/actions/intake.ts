@@ -91,6 +91,7 @@ export async function submitIntakeForm(
     p_parent_phone: data.parent_phone || null,
     p_spouse_name: data.spouse_name || null,
     p_source: data.source || null,
+    p_postal_code: data.postal_code || null,
     p_children: JSON.stringify(
       data.children.map((c) => ({
         first_name: c.first_name,

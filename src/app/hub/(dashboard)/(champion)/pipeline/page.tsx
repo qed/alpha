@@ -72,7 +72,7 @@ export default async function PipelinePage({
     const { data: detail } = await supabase
       .from("prospects")
       .select(
-        "id, parent_first, parent_last, parent_email, parent_phone, spouse_name, source, status, heat_score, concerns, engagement_signals, last_touch_at, neighborhood, follow_up_date, first_responded_at, consent_given, consent_at, created_at, updated_at"
+        "id, parent_first, parent_last, parent_email, parent_phone, spouse_name, source, postal_code, status, heat_score, concerns, engagement_signals, last_touch_at, neighborhood, follow_up_date, first_responded_at, consent_given, consent_at, created_at, updated_at"
       )
       .eq("id", prospectId)
       .eq("geography_id", session.geographyId)

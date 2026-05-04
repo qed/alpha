@@ -15,10 +15,10 @@ describe("PublicNavbar", () => {
     expect(screen.getByText("Parents Hub")).toBeInTheDocument();
   });
 
-  it("renders The Hub link pointing to /hub", () => {
+  it("renders For Parents link pointing to /for-parents", () => {
     render(<PublicNavbar />);
-    const link = screen.getByText("The Hub");
-    expect(link).toHaveAttribute("href", "/hub");
+    const link = screen.getByText("For Parents");
+    expect(link).toHaveAttribute("href", "/for-parents");
   });
 
   it("renders Join the Community CTA by default", () => {

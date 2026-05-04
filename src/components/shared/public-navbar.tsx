@@ -25,10 +25,10 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
         </Link>
         <div className="ml-auto flex gap-3 items-center">
           <Link
-            href="/hub"
+            href="/for-parents"
             className="text-sm font-medium text-ink-2 no-underline"
           >
-            The Hub
+            For Parents
           </Link>
           {variant === "hub" ? (
             <Link

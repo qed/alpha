@@ -67,6 +67,7 @@ export interface SelectedProspectDetail {
   parent_phone: string | null;
   spouse_name: string | null;
   source: string | null;
+  postal_code: string | null;
   status: PipelineStage;
   heat_score: number;
   concerns: string[];

@@ -92,18 +92,16 @@ export async function submitIntakeForm(
     p_spouse_name: data.spouse_name || null,
     p_source: data.source || null,
     p_postal_code: data.postal_code || null,
-    p_children: JSON.stringify(
-      data.children.map((c) => ({
-        first_name: c.first_name,
-        grade: c.grade || null,
-        age: c.age ?? null,
-        gender: c.gender || null,
-      }))
-    ),
+    p_children: data.children.map((c) => ({
+      first_name: c.first_name,
+      grade: c.grade || null,
+      age: c.age ?? null,
+      gender: c.gender || null,
+    })),
   });
 
   if (error) {
-    console.error("Intake submission failed:", error);
+    console.error("Intake submission failed:", error.message, error.code);
     return { success: false, error: "Submission failed. Please try again." };
   }
 

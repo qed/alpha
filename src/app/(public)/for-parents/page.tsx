@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function ForParentsPage() {
   return (
     <div className="bg-paper text-ink">
-      <PublicNavbar />
+      <PublicNavbar variant="for-parents" />
 
       {/* HERO */}
       <section

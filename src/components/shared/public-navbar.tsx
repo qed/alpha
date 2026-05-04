@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface PublicNavbarProps {
-  variant?: "default" | "hub";
+  variant?: "default" | "hub" | "for-parents";
 }
 
 export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
@@ -23,12 +23,12 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
             </div>
           </div>
         </Link>
-        <div className="ml-auto flex gap-3 items-center">
+        <div className="ml-auto flex gap-6 items-center">
           <Link
-            href="/for-parents"
+            href={variant === "for-parents" ? "/" : "/for-parents"}
             className="text-sm font-medium text-ink-2 no-underline"
           >
-            For Parents
+            {variant === "for-parents" ? "Why Alpha" : "For Parents"}
           </Link>
           {variant === "hub" ? (
             <Link

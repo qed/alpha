@@ -17,11 +17,6 @@ export function PublicNavbar({ variant = "default" }: PublicNavbarProps) {
             height={40}
             className="h-10 w-auto"
           />
-          <div>
-            <div className="font-[family-name:var(--font-display)] font-bold text-[10px] tracking-[.16em] uppercase text-ink-4 leading-none mt-0.5">
-              Parents Hub
-            </div>
-          </div>
         </Link>
         <div className="ml-auto flex gap-6 items-center">
           <Link

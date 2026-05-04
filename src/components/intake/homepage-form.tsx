@@ -26,6 +26,7 @@ export function HomepageForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const [formState, setFormState] = useState({
     parent_first: "",
@@ -88,6 +89,8 @@ export function HomepageForm() {
     if (result.success) {
       setSuccess(true);
     } else {
+      setTurnstileToken("");
+      setTurnstileKey((k) => k + 1);
       setError(result.error || "Something went wrong. Please try again.");
     }
   };
@@ -124,7 +127,7 @@ export function HomepageForm() {
             </svg>
           </div>
           <h3 className="wp-events-heading">Thank you!</h3>
-          <p style={{ color: "rgba(255,255,255,0.7)", marginTop: "8px", fontSize: "14px" }}>
+          <p style={{ color: "#6B7280", marginTop: "8px", fontSize: "14px" }}>
             Your interest has been received. A local Alpha Toronto champion will reach out soon.
           </p>
         </div>
@@ -137,7 +140,7 @@ export function HomepageForm() {
       <h3 className="wp-events-heading">Express Your Interest</h3>
       <form onSubmit={handleSubmit} className="wp-homepage-form">
         {error && (
-          <div style={{ padding: "8px 12px", background: "rgba(220,38,38,0.15)", borderRadius: "6px", fontSize: "13px", color: "#fca5a5", marginBottom: "12px" }}>
+          <div style={{ padding: "8px 12px", background: "rgba(220,38,38,0.08)", borderRadius: "6px", fontSize: "13px", color: "#dc2626", marginBottom: "12px" }}>
             {error}
           </div>
         )}
@@ -268,7 +271,7 @@ export function HomepageForm() {
           </label>
         </div>
 
-        <TurnstileWidget onVerify={handleTurnstile} />
+        <TurnstileWidget key={turnstileKey} onVerify={handleTurnstile} />
 
         <button
           type="submit"

@@ -1,6 +1,9 @@
 -- Add postal_code column to prospects for geographic segmentation
 ALTER TABLE prospects ADD COLUMN postal_code text;
 
+-- Drop old function signature (8 params) to avoid overload
+DROP FUNCTION IF EXISTS public.submit_intake(text, text, text, text, text, text, text, jsonb);
+
 -- Recreate submit_intake with new optional p_postal_code parameter
 CREATE OR REPLACE FUNCTION public.submit_intake(
   p_geography_slug text,
@@ -83,5 +86,5 @@ BEGIN
 END;
 $$;
 
--- Re-grant execute to anon role
-GRANT EXECUTE ON FUNCTION public.submit_intake TO anon;
+-- Re-grant execute to anon role (specify full signature to avoid ambiguity)
+GRANT EXECUTE ON FUNCTION public.submit_intake(text, text, text, text, text, text, text, jsonb, text) TO anon;

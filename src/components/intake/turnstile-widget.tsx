@@ -17,6 +17,7 @@ declare global {
           "error-callback": () => void;
           "expired-callback": () => void;
           theme: string;
+          appearance?: "always" | "execute" | "interaction-only";
         }
       ) => string;
       reset: (widgetId: string) => void;

@@ -64,7 +64,7 @@ export async function submitIntakeForm(
     const limiter = getRateLimiter();
     const { success: allowed } = await limiter.limit(ip);
     if (!allowed) {
-      return { success: false, error: "Too many submissions. Please try again later." };
+      return { success: false, error: "Only 5 submissions per hour permitted." };
     }
   } catch {
     // If Redis is unavailable, allow the request but log

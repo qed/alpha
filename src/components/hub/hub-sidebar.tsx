@@ -61,6 +61,26 @@ function NavIcon({ type }: { type: string }) {
           <polyline points="10 9 9 9 8 9" />
         </svg>
       );
+    case "leaderboard":
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+        </svg>
+      );
+    case "champions":
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -75,14 +95,20 @@ function LockIcon() {
   );
 }
 
+const ADMIN_ITEMS = [
+  { id: "leaderboard", label: "Leaderboard", href: "/hub/leaderboard", icon: "leaderboard" },
+  { id: "champions", label: "Champions", href: "/hub/champions", icon: "champions" },
+] as const;
+
 interface HubSidebarProps {
   isAuthenticated: boolean;
+  isAdmin?: boolean;
   geographyName: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function HubSidebar({ isAuthenticated, geographyName, isOpen, onClose }: HubSidebarProps) {
+export function HubSidebar({ isAuthenticated, isAdmin = false, geographyName, isOpen, onClose }: HubSidebarProps) {
   const { signOut } = useClerk();
   const router = useRouter();
   const pathname = usePathname();
@@ -236,6 +262,34 @@ export function HubSidebar({ isAuthenticated, geographyName, isOpen, onClose }: 
             </button>
           );
         })}
+
+        {/* Admin section — visible only to admins */}
+        {isAdmin && (
+          <>
+            <div className="font-[family-name:var(--font-display)] font-bold text-[10px] tracking-[0.16em] uppercase text-white/40 px-5 pt-3.5 pb-2">
+              Admin
+            </div>
+            {ADMIN_ITEMS.map((item) => {
+              const isActive = pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={onClose}
+                  className={[
+                    "flex items-center gap-3 px-5 py-2 text-[13px] font-medium border-l-2 transition-all duration-[120ms]",
+                    isActive
+                      ? "text-white bg-[rgba(0,0,255,0.18)] border-l-alpha-blue"
+                      : "text-white/75 border-l-transparent hover:text-white hover:bg-white/[0.04]",
+                  ].join(" ")}
+                >
+                  <NavIcon type={item.icon} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </>
+        )}
 
         {/* My Geography section */}
         <div className="font-[family-name:var(--font-display)] font-bold text-[10px] tracking-[0.16em] uppercase text-white/40 px-5 pt-3.5 pb-2">

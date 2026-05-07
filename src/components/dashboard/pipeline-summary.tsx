@@ -1,5 +1,3 @@
-"use client";
-
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import {

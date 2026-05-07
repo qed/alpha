@@ -1,24 +1,21 @@
 import { requireAuthenticated } from "@/lib/auth";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import {
-  PIPELINE_STAGES,
   ENROLLMENT_THRESHOLD,
   type PipelineStage,
 } from "@/lib/constants/pipeline";
-import { daysSince } from "@/lib/utils/dates";
 import { KpiStrip } from "@/components/dashboard/kpi-strip";
 import { DepositThermometer } from "@/components/dashboard/deposit-thermometer";
-import {
-  TodaysBriefing,
-  type BriefingProspect,
-  type CoolingProspect,
-  type WarmingProspect,
-} from "@/components/dashboard/todays-briefing";
+import { TodaysBriefing } from "@/components/dashboard/todays-briefing";
 import { PipelineSummary } from "@/components/dashboard/pipeline-summary";
+import { ThisWeekStats } from "@/components/dashboard/this-week-stats";
 import {
-  ThisWeekStats,
-  type WeeklyStats,
-} from "@/components/dashboard/this-week-stats";
+  computeStreak,
+  buildFollowUps,
+  buildCoolingOff,
+  buildWarmingUp,
+  buildWeeklyStats,
+} from "@/lib/utils/dashboard";
 
 export default async function ChampionDashboardPage() {
   const session = await requireAuthenticated();
@@ -144,162 +141,21 @@ export default async function ChampionDashboardPage() {
   // ---------- 14-day deposit delta ----------
   const depositDelta = depositDeltaRows?.length ?? 0;
 
-  // ---------- Streak calculation ----------
-  function computeStreak(
-    rows: { created_at: string }[] | null
-  ): number {
-    if (!rows || rows.length === 0) return 0;
-
-    // Extract distinct dates (YYYY-MM-DD) and sort descending
-    const dateSet = new Set<string>();
-    for (const row of rows) {
-      const d = new Date(row.created_at);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-      dateSet.add(dateStr);
-    }
-
-    const sortedDates = [...dateSet].sort().reverse();
-    if (sortedDates.length === 0) return 0;
-
-    // Check if today is in the streak
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
-    let streak = 0;
-    let expectedDate = new Date(now);
-
-    // If today has no action, start from yesterday
-    if (sortedDates[0] !== todayStr) {
-      expectedDate.setDate(expectedDate.getDate() - 1);
-    }
-
-    for (const dateStr of sortedDates) {
-      const expected = `${expectedDate.getFullYear()}-${String(expectedDate.getMonth() + 1).padStart(2, "0")}-${String(expectedDate.getDate()).padStart(2, "0")}`;
-      if (dateStr === expected) {
-        streak++;
-        expectedDate.setDate(expectedDate.getDate() - 1);
-      } else if (dateStr < expected) {
-        // Gap found — streak broken
-        break;
-      }
-      // If dateStr > expected, skip duplicate/future entries
-    }
-
-    return streak;
-  }
-
-  const streak = computeStreak(streakRows);
-
-  // ---------- Briefing: Follow-ups ----------
-  const prospects = prospectRows ?? [];
-
-  const followUpCandidates = prospects
-    .filter(
-      (p) =>
-        p.status !== "committed" &&
-        p.status !== "enrolled" &&
-        p.status !== "lost"
-    )
-    .map((p) => {
-      const touchDate = p.last_touch_at ?? p.created_at;
-      const dSince = daysSince(touchDate);
-      const heatScore = p.heat_score ?? 0;
-      return {
-        id: p.id as string,
-        parent_first: p.parent_first as string,
-        parent_last: p.parent_last as string,
-        heat_score: heatScore as number,
-        days_since_touch: dSince,
-        stage: p.status as PipelineStage,
-        rank: heatScore * 4 + dSince,
-      };
-    })
-    .sort((a, b) => b.rank - a.rank)
-    .slice(0, 3);
-
-  const followUps: BriefingProspect[] = followUpCandidates.map(
-    ({ rank, ...rest }) => rest
-  );
-
-  // ---------- Briefing: Cooling off ----------
-  const coolingOff: CoolingProspect[] = prospects
-    .filter(
-      (p) =>
-        p.status !== "committed" &&
-        p.status !== "enrolled" &&
-        p.status !== "lost"
-    )
-    .map((p) => {
-      const touchDate = p.last_touch_at ?? p.created_at;
-      const dSince = daysSince(touchDate);
-      const heatScore = p.heat_score ?? 0;
-      return {
-        id: p.id as string,
-        parent_first: p.parent_first as string,
-        parent_last: p.parent_last as string,
-        days_since_touch: dSince,
-        heat_score: heatScore,
-      };
-    })
-    .filter((p) => p.days_since_touch > 14 && p.heat_score <= 3)
-    .sort((a, b) => b.days_since_touch - a.days_since_touch)
-    .slice(0, 2)
-    .map(({ heat_score, ...rest }) => rest);
-
-  // ---------- Briefing: Warming up ----------
-  const warmingProspectIds = new Set<string>();
-  if (warmingSignalRows) {
-    for (const row of warmingSignalRows) {
-      const meta = row.metadata as Record<string, unknown> | null;
-      if (meta?.active === true || meta?.active === "true") {
-        if (row.prospect_id) {
-          warmingProspectIds.add(row.prospect_id as string);
-        }
-      }
-    }
-  }
-
-  const warmingUp: WarmingProspect[] = prospects
-    .filter(
-      (p) =>
-        warmingProspectIds.has(p.id as string) &&
-        (p.status === "interested" || p.status === "shadow-day")
-    )
-    .slice(0, 2)
-    .map((p) => ({
-      id: p.id as string,
-      parent_first: p.parent_first as string,
-      parent_last: p.parent_last as string,
-      stage: p.status as PipelineStage,
-    }));
-
-  // ---------- This-week stats ----------
-  const weekStats: WeeklyStats = {
-    oneOnOneConversations: 0,
-    librarySends: 0,
-    stageChanges: 0,
-    newContacts: 0,
-  };
-
-  if (weekAuditRows) {
-    for (const row of weekAuditRows) {
-      const action = row.action as string;
-      const meta = row.metadata as Record<string, unknown> | null;
-
-      if (
-        action === "signal-toggle" &&
-        meta?.signal_id === "1-1" &&
-        (meta?.active === true || meta?.active === "true")
-      ) {
-        weekStats.oneOnOneConversations++;
-      } else if (action === "library-send") {
-        weekStats.librarySends++;
-      } else if (action === "status-change") {
-        weekStats.stageChanges++;
-      } else if (action === "prospect-create") {
-        weekStats.newContacts++;
-      }
-    }
-  }
+  // ---------- Derived data ----------
+  const streak = computeStreak(streakRows, now);
+  const prospects = (prospectRows ?? []) as {
+    id: string;
+    parent_first: string;
+    parent_last: string;
+    status: string;
+    heat_score: number | null;
+    last_touch_at: string | null;
+    created_at: string;
+  }[];
+  const followUps = buildFollowUps(prospects);
+  const coolingOff = buildCoolingOff(prospects);
+  const warmingUp = buildWarmingUp(prospects, warmingSignalRows as { prospect_id: string | null; metadata: unknown }[] | null);
+  const weekStats = buildWeeklyStats(weekAuditRows as { action: string; metadata: unknown }[] | null);
 
   // ---------- Render ----------
   return (

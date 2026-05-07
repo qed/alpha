@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { HeatPips } from "@/components/dashboard/heat-pips";
 import { StatusBadge } from "@/components/shared/status-badge";

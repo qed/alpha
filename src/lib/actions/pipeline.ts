@@ -322,12 +322,22 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     parsed.data;
   const supabase = getSupabaseAdminClient();
 
-  // Ownership check: verify prospect belongs to champion's geography
-  const { data: prospect, error: fetchError } = await supabase
-    .from("prospects")
-    .select("id, geography_id, engagement_signals")
-    .eq("id", prospect_id)
-    .single();
+  // Parallel ownership checks
+  const [
+    { data: prospect, error: fetchError },
+    { data: item, error: itemError },
+  ] = await Promise.all([
+    supabase
+      .from("prospects")
+      .select("id, geography_id, engagement_signals")
+      .eq("id", prospect_id)
+      .single(),
+    supabase
+      .from("library_items")
+      .select("id, send_count, geography_id")
+      .eq("id", library_item_id)
+      .single(),
+  ]);
 
   if (fetchError || !prospect) {
     return { success: false, error: "Prospect not found." };
@@ -336,13 +346,6 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
   if (prospect.geography_id !== session.geographyId) {
     return { success: false, error: "Access denied." };
   }
-
-  // Verify library item exists and belongs to geography (or is global)
-  const { data: item, error: itemError } = await supabase
-    .from("library_items")
-    .select("id, send_count, geography_id")
-    .eq("id", library_item_id)
-    .single();
 
   if (itemError || !item) {
     return { success: false, error: "Library item not found." };
@@ -365,46 +368,46 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     return { success: false, error: "Failed to record library send." };
   }
 
-  // Update last_touch_at on prospect
-  await supabase
-    .from("prospects")
-    .update({ last_touch_at: new Date().toISOString() })
-    .eq("id", prospect_id);
+  // Parallel post-insert writes
+  const writes: Promise<unknown>[] = [
+    supabase
+      .from("prospects")
+      .update({ last_touch_at: new Date().toISOString() })
+      .eq("id", prospect_id),
+    supabase
+      .from("library_items")
+      .update({ send_count: item.send_count + 1 })
+      .eq("id", library_item_id),
+    supabase.from("audit_log").insert({
+      actor_id: session.profileId,
+      action: "library-send",
+      geography_id: session.geographyId,
+      prospect_id,
+      metadata: { library_item_id, prospect_id, channel },
+    }),
+  ];
 
-  // Increment send_count on the library item
-  await supabase
-    .from("library_items")
-    .update({ send_count: item.send_count + 1 })
-    .eq("id", library_item_id);
-
-  // Auto-log the 'faq' engagement signal (inlined — do NOT call toggleSignal)
   if (auto_log_signal) {
     const currentSignals: string[] = prospect.engagement_signals ?? [];
     if (!currentSignals.includes("faq")) {
       const updatedSignals = [...currentSignals, "faq"];
-      await supabase
-        .from("prospects")
-        .update({ engagement_signals: updatedSignals })
-        .eq("id", prospect_id);
-
-      await supabase.from("audit_log").insert({
-        actor_id: session.profileId,
-        action: "signal-toggle",
-        geography_id: session.geographyId,
-        prospect_id,
-        metadata: { signal_id: "faq", active: true },
-      });
+      writes.push(
+        supabase
+          .from("prospects")
+          .update({ engagement_signals: updatedSignals })
+          .eq("id", prospect_id),
+        supabase.from("audit_log").insert({
+          actor_id: session.profileId,
+          action: "signal-toggle",
+          geography_id: session.geographyId,
+          prospect_id,
+          metadata: { signal_id: "faq", active: true },
+        })
+      );
     }
   }
 
-  // Audit log for the library send itself
-  await supabase.from("audit_log").insert({
-    actor_id: session.profileId,
-    action: "library-send",
-    geography_id: session.geographyId,
-    prospect_id,
-    metadata: { library_item_id, prospect_id, channel },
-  });
+  await Promise.all(writes);
 
   return { success: true };
 }

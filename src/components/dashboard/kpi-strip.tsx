@@ -1,5 +1,3 @@
-"use client";
-
 interface KpiStripProps {
   deposits: number;
   depositTarget: number;

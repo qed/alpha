@@ -1,7 +1,3 @@
-"use client";
-
-import { ProgressBar } from "@/components/shared/progress-bar";
-
 interface DepositThermometerProps {
   deposits: number;
   threshold: number;

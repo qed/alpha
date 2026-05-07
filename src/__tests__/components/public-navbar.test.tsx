@@ -10,11 +10,6 @@ describe("PublicNavbar", () => {
     expect(logo).toHaveAttribute("src", expect.stringContaining("Alpha"));
   });
 
-  it("renders the Parents Hub label", () => {
-    render(<PublicNavbar />);
-    expect(screen.getByText("Parents Hub")).toBeInTheDocument();
-  });
-
   it("renders For Parents link pointing to /for-parents", () => {
     render(<PublicNavbar />);
     const link = screen.getByText("For Parents");

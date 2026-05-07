@@ -30,42 +30,56 @@ vi.mock("@/lib/actions/geography-selection", () => ({
 
 import DashboardLayout from "@/app/hub/(dashboard)/layout";
 
-describe("null geography guards", () => {
+describe("DashboardLayout", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("dashboard layout", () => {
-    it("shows GeographyPicker when geographyId is null", async () => {
+  describe("with geography", () => {
+    beforeEach(() => {
       mockRequireAuth.mockResolvedValue({
         userId: "user_1",
+        profileId: "profile-1",
         role: "champion",
-        geographyId: null,
+        geographyId: "geo-1",
       });
+    });
 
+    it("renders children without a header element", async () => {
       const layout = await DashboardLayout({
-        children: <div>Dashboard content</div>,
+        children: <div data-testid="child">Dashboard content</div>,
+      });
+      const { container } = render(layout);
+      expect(screen.getByTestId("child")).toBeInTheDocument();
+      expect(container.querySelector("header")).toBeNull();
+    });
+
+    it("does not render UserButton", async () => {
+      const layout = await DashboardLayout({
+        children: <div>Content</div>,
       });
       render(layout);
-      expect(screen.getByText("Austin")).toBeInTheDocument();
-      expect(screen.queryByText("Dashboard content")).not.toBeInTheDocument();
+      expect(screen.queryByText("UserButton")).not.toBeInTheDocument();
     });
   });
 
-  describe("pipeline layout", () => {
-    it("shows GeographyPicker when geographyId is null", async () => {
+  describe("without geography", () => {
+    beforeEach(() => {
       mockRequireAuth.mockResolvedValue({
         userId: "user_1",
+        profileId: "profile-1",
         role: "champion",
         geographyId: null,
       });
+    });
 
+    it("renders GeographyPicker without a header element", async () => {
       const layout = await DashboardLayout({
-        children: <div>Pipeline content</div>,
+        children: <div>Should not appear</div>,
       });
-      render(layout);
+      const { container } = render(layout);
       expect(screen.getByText("Austin")).toBeInTheDocument();
-      expect(screen.queryByText("Pipeline content")).not.toBeInTheDocument();
+      expect(container.querySelector("header")).toBeNull();
     });
   });
 });

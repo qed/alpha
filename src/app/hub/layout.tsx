@@ -11,13 +11,16 @@ export default async function HubLayout({
   const isAuthenticated = !!userId;
 
   let geographyName: string | null = null;
+  let isAdmin = false;
   if (userId) {
     const supabase = getSupabaseAdminClient();
     const { data: profile } = await supabase
       .from("profiles")
-      .select("geography_id")
+      .select("role, geography_id")
       .eq("clerk_user_id", userId)
       .maybeSingle();
+
+    isAdmin = profile?.role === "admin";
 
     if (profile?.geography_id) {
       const { data: geo } = await supabase
@@ -30,7 +33,7 @@ export default async function HubLayout({
   }
 
   return (
-    <HubShell isAuthenticated={isAuthenticated} geographyName={geographyName}>
+    <HubShell isAuthenticated={isAuthenticated} isAdmin={isAdmin} geographyName={geographyName}>
       {children}
     </HubShell>
   );

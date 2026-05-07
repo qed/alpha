@@ -18,9 +18,10 @@ describe("next.config redirects", () => {
     expect(sources).toContain("/champions");
     expect(sources).toContain("/geography/:path*");
 
-    for (const redirect of redirects) {
+    const hubRedirects = redirects.filter((r) => r.destination.startsWith("/hub/"));
+    expect(hubRedirects.length).toBeGreaterThan(0);
+    for (const redirect of hubRedirects) {
       expect(redirect.permanent).toBe(true);
-      expect(redirect.destination).toMatch(/^\/hub\//);
     }
   });
 

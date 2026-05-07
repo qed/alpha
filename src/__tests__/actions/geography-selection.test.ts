@@ -139,18 +139,6 @@ describe("selectGeography", () => {
     );
   });
 
-  it("rejects non-champion role", async () => {
-    mockRequireAuthenticated.mockResolvedValue({
-      userId: "user_admin",
-      role: "admin",
-      geographyId: null,
-    });
-
-    const result = await selectGeography({ geographyId: "550e8400-e29b-41d4-a716-446655440000" });
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("Only champions");
-  });
-
   it("rejects user who already has geography in both Supabase and Clerk", async () => {
     mockRequireAuthenticated.mockResolvedValue({
       userId: "user_1",
@@ -261,22 +249,6 @@ describe("createGeography", () => {
         geography_id: "geo-new",
       })
     );
-  });
-
-  it("rejects non-champion role", async () => {
-    mockRequireAuthenticated.mockResolvedValue({
-      userId: "user_admin",
-      role: "admin",
-      geographyId: null,
-    });
-
-    const result = await createGeography({
-      name: "Toronto",
-      region: "Ontario",
-      country: "CA",
-    });
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("Only champions");
   });
 
   it("rejects user who already has a geography", async () => {

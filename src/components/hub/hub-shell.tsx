@@ -5,17 +5,19 @@ import { HubSidebar } from "./hub-sidebar";
 
 interface HubShellProps {
   isAuthenticated: boolean;
+  isAdmin?: boolean;
   geographyName?: string | null;
   children: React.ReactNode;
 }
 
-export function HubShell({ isAuthenticated, geographyName, children }: HubShellProps) {
+export function HubShell({ isAuthenticated, isAdmin = false, geographyName, children }: HubShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="grid lg:grid-cols-[240px_1fr] grid-cols-1 min-h-screen">
       <HubSidebar
         isAuthenticated={isAuthenticated}
+        isAdmin={isAdmin}
         geographyName={geographyName ?? null}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

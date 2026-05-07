@@ -42,6 +42,8 @@ export const addPipelineNoteSchema = z.object({
 export const recordLibrarySendSchema = z.object({
   prospect_id: z.string().uuid(),
   library_item_id: z.string().uuid(),
+  channel: z.enum(["email", "sms", "whatsapp", "link"]),
+  auto_log_signal: z.boolean().default(true),
 });
 
 export type CreatePipelineProspectData = z.infer<typeof createPipelineProspectSchema>;

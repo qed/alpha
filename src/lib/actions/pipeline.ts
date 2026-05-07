@@ -318,13 +318,14 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     return { success: false, error: "Invalid input." };
   }
 
-  const { prospect_id, library_item_id } = parsed.data;
+  const { prospect_id, library_item_id, channel, auto_log_signal } =
+    parsed.data;
   const supabase = getSupabaseAdminClient();
 
   // Ownership check: verify prospect belongs to champion's geography
   const { data: prospect, error: fetchError } = await supabase
     .from("prospects")
-    .select("id, geography_id")
+    .select("id, geography_id, engagement_signals")
     .eq("id", prospect_id)
     .single();
 
@@ -357,7 +358,7 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     prospect_id,
     champion_id: session.profileId,
     geography_id: session.geographyId,
-    channel: "in-app",
+    channel,
   });
 
   if (sendError) {
@@ -376,13 +377,33 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
     .update({ send_count: item.send_count + 1 })
     .eq("id", library_item_id);
 
-  // Audit log
+  // Auto-log the 'faq' engagement signal (inlined — do NOT call toggleSignal)
+  if (auto_log_signal) {
+    const currentSignals: string[] = prospect.engagement_signals ?? [];
+    if (!currentSignals.includes("faq")) {
+      const updatedSignals = [...currentSignals, "faq"];
+      await supabase
+        .from("prospects")
+        .update({ engagement_signals: updatedSignals })
+        .eq("id", prospect_id);
+
+      await supabase.from("audit_log").insert({
+        actor_id: session.profileId,
+        action: "signal-toggle",
+        geography_id: session.geographyId,
+        prospect_id,
+        metadata: { signal_id: "faq", active: true },
+      });
+    }
+  }
+
+  // Audit log for the library send itself
   await supabase.from("audit_log").insert({
     actor_id: session.profileId,
     action: "library-send",
     geography_id: session.geographyId,
     prospect_id,
-    metadata: { library_item_id, prospect_id },
+    metadata: { library_item_id, prospect_id, channel },
   });
 
   return { success: true };

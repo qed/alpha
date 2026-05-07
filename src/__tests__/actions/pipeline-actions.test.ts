@@ -967,6 +967,7 @@ describe("recordLibrarySend", () => {
       data: {
         id: VALID_UUID,
         geography_id: SESSION_GEO,
+        engagement_signals: [],
       },
       error: null,
     };
@@ -983,10 +984,116 @@ describe("recordLibrarySend", () => {
     libraryItemUpdateResult = { error: null };
   });
 
+  it("send with channel creates library_sends row with correct channel value", async () => {
+    const result = await recordLibrarySend({
+      prospect_id: VALID_UUID,
+      library_item_id: LIBRARY_ITEM_UUID,
+      channel: "whatsapp",
+      auto_log_signal: false,
+    });
+
+    expect(result).toEqual({ success: true });
+
+    // Verify library_sends insert has correct channel
+    expect(mockLibrarySendInsert).toHaveBeenCalledWith({
+      library_item_id: LIBRARY_ITEM_UUID,
+      prospect_id: VALID_UUID,
+      champion_id: PROFILE_ID,
+      geography_id: SESSION_GEO,
+      channel: "whatsapp",
+    });
+  });
+
+  it("auto_log_signal=true toggles faq signal on prospect", async () => {
+    prospectSelectResult = {
+      data: {
+        id: VALID_UUID,
+        geography_id: SESSION_GEO,
+        engagement_signals: [],
+      },
+      error: null,
+    };
+
+    const result = await recordLibrarySend({
+      prospect_id: VALID_UUID,
+      library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
+      auto_log_signal: true,
+    });
+
+    expect(result).toEqual({ success: true });
+
+    // Should update prospect with faq signal added
+    expect(mockProspectUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        engagement_signals: ["faq"],
+      })
+    );
+
+    // Should write signal-toggle audit log
+    expect(mockAuditInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "signal-toggle",
+        metadata: { signal_id: "faq", active: true },
+      })
+    );
+  });
+
+  it("auto_log_signal=true does not duplicate faq signal when already present", async () => {
+    prospectSelectResult = {
+      data: {
+        id: VALID_UUID,
+        geography_id: SESSION_GEO,
+        engagement_signals: ["faq", "1-1"],
+      },
+      error: null,
+    };
+
+    await recordLibrarySend({
+      prospect_id: VALID_UUID,
+      library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
+      auto_log_signal: true,
+    });
+
+    // Should NOT call update with engagement_signals (only last_touch_at and send_count updates)
+    const updateCalls = mockProspectUpdate.mock.calls;
+    const signalUpdate = updateCalls.find(
+      (call: unknown[]) => (call[0] as Record<string, unknown>).engagement_signals
+    );
+    expect(signalUpdate).toBeUndefined();
+  });
+
+  it("auto_log_signal=false skips signal toggle, still creates library_sends", async () => {
+    const result = await recordLibrarySend({
+      prospect_id: VALID_UUID,
+      library_item_id: LIBRARY_ITEM_UUID,
+      channel: "sms",
+      auto_log_signal: false,
+    });
+
+    expect(result).toEqual({ success: true });
+
+    // Should still insert library send
+    expect(mockLibrarySendInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        channel: "sms",
+      })
+    );
+
+    // Should NOT have signal-toggle audit entry
+    const signalAudit = mockAuditInsert.mock.calls.find(
+      (call: unknown[]) => (call[0] as Record<string, unknown>).action === "signal-toggle"
+    );
+    expect(signalAudit).toBeUndefined();
+  });
+
   it("valid input inserts into library_sends, increments send_count, writes audit log, returns success", async () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
+      auto_log_signal: true,
     });
 
     expect(result).toEqual({ success: true });
@@ -997,7 +1104,7 @@ describe("recordLibrarySend", () => {
       prospect_id: VALID_UUID,
       champion_id: PROFILE_ID,
       geography_id: SESSION_GEO,
-      channel: "in-app",
+      channel: "email",
     });
 
     // Verify last_touch_at update on prospect
@@ -1008,7 +1115,7 @@ describe("recordLibrarySend", () => {
     // Verify send_count increment (0 + 1 = 1)
     expect(mockLibraryItemUpdate).toHaveBeenCalledWith({ send_count: 1 });
 
-    // Verify audit log
+    // Verify library-send audit log
     expect(mockAuditInsert).toHaveBeenCalledWith(
       expect.objectContaining({
         actor_id: PROFILE_ID,
@@ -1018,6 +1125,7 @@ describe("recordLibrarySend", () => {
         metadata: {
           library_item_id: LIBRARY_ITEM_UUID,
           prospect_id: VALID_UUID,
+          channel: "email",
         },
       })
     );
@@ -1031,6 +1139,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1042,6 +1151,7 @@ describe("recordLibrarySend", () => {
   it("returns error on invalid input (missing prospect_id)", async () => {
     const result = await recordLibrarySend({
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1054,6 +1164,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: "not-a-uuid",
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1065,6 +1176,20 @@ describe("recordLibrarySend", () => {
   it("returns error on invalid input (missing library_item_id)", async () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
+      channel: "email",
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: "Invalid input.",
+    });
+  });
+
+  it("returns error on invalid input (invalid channel)", async () => {
+    const result = await recordLibrarySend({
+      prospect_id: VALID_UUID,
+      library_item_id: LIBRARY_ITEM_UUID,
+      channel: "telegram",
     });
 
     expect(result).toEqual({
@@ -1078,6 +1203,7 @@ describe("recordLibrarySend", () => {
       data: {
         id: VALID_UUID,
         geography_id: "other_geo",
+        engagement_signals: [],
       },
       error: null,
     };
@@ -1085,6 +1211,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1102,6 +1229,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1119,6 +1247,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1140,6 +1269,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1161,6 +1291,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "link",
     });
 
     expect(result).toEqual({ success: true });
@@ -1173,6 +1304,7 @@ describe("recordLibrarySend", () => {
     const result = await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(result).toEqual({
@@ -1187,6 +1319,7 @@ describe("recordLibrarySend", () => {
     await recordLibrarySend({
       prospect_id: VALID_UUID,
       library_item_id: LIBRARY_ITEM_UUID,
+      channel: "email",
     });
 
     expect(mockLibraryItemUpdate).not.toHaveBeenCalled();

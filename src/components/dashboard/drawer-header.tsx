@@ -12,7 +12,7 @@ import { updateProspectStatus } from "@/lib/actions/prospects";
 import { overrideHeat } from "@/lib/actions/pipeline";
 import { HeatPips } from "./heat-pips";
 import { suggestHeat } from "@/lib/pipeline/copilot-engine";
-import { LibrarySendPanel } from "./library-send-panel";
+import { SendComposer } from "./send-composer";
 import type { SelectedProspectDetail } from "./contact-drawer";
 
 interface DrawerHeaderProps {
@@ -49,6 +49,9 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
   const [error, setError] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [libraryPanelOpen, setLibraryPanelOpen] = useState(false);
+  const [selectedLibraryItem, setSelectedLibraryItem] = useState<
+    (typeof prospect.libraryItems)[number] | null
+  >(null);
 
   const allowedTransitions = ALLOWED_TRANSITIONS[prospect.status];
 
@@ -191,18 +194,83 @@ export function DrawerHeader({ prospect }: DrawerHeaderProps) {
           onClick={() => setLibraryPanelOpen(true)}
           className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-alpha-blue rounded-sm hover:bg-alpha-blue-600 transition-colors"
         >
-          Answers to concerns
+          Send from library
         </button>
       </div>
 
-      {/* Library Send Panel */}
-      {libraryPanelOpen && (
-        <LibrarySendPanel
-          libraryItems={prospect.libraryItems}
-          librarySends={prospect.librarySends}
-          prospectConcerns={prospect.concerns}
-          prospectId={prospect.id}
-          onClose={() => setLibraryPanelOpen(false)}
+      {/* Library Item Picker */}
+      {libraryPanelOpen && !selectedLibraryItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Pick a library item"
+        >
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setLibraryPanelOpen(false)}
+          />
+          <div className="relative bg-paper rounded-md shadow-lg w-full max-w-[540px] mx-4 max-h-[70vh] overflow-y-auto">
+            <div className="px-6 py-5 border-b border-line flex items-center justify-between sticky top-0 bg-paper z-10">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-ink">
+                Send from Library
+              </h2>
+              <button
+                type="button"
+                onClick={() => setLibraryPanelOpen(false)}
+                className="text-ink-3 hover:text-ink text-xl leading-none"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-2">
+              {prospect.libraryItems.length === 0 ? (
+                <p className="text-sm text-ink-3 text-center py-8">
+                  No library items available.
+                </p>
+              ) : (
+                prospect.libraryItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSelectedLibraryItem(item)}
+                    className="w-full text-left p-3 border border-line rounded-lg hover:bg-paper-2 transition-colors"
+                  >
+                    <span className="text-sm font-medium text-ink block">
+                      {item.title}
+                    </span>
+                    <span className="text-xs text-ink-4 capitalize">
+                      {item.type}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Composer Modal */}
+      {selectedLibraryItem && (
+        <SendComposer
+          libraryItem={selectedLibraryItem}
+          prospect={{
+            id: prospect.id,
+            parent_first: prospect.parent_first,
+            parent_last: prospect.parent_last,
+            email: prospect.parent_email,
+          }}
+          prospects={[{
+            id: prospect.id,
+            parent_first: prospect.parent_first,
+            parent_last: prospect.parent_last,
+            email: prospect.parent_email,
+          }]}
+          onClose={() => {
+            setSelectedLibraryItem(null);
+            setLibraryPanelOpen(false);
+          }}
         />
       )}
     </div>

@@ -1,392 +1,169 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-vi.mock("@clerk/nextjs/server", () => ({
-  auth: () => Promise.resolve({ userId: null }),
-}));
-
 vi.mock("next/navigation", () => ({
-  redirect: (url: string) => {
-    throw new Error(`NEXT_REDIRECT:${url}`);
-  },
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
     back: vi.fn(),
+    refresh: vi.fn(),
   }),
   usePathname: () => "/hub/library",
 }));
 
-vi.mock("next/image", () => ({
-  default: (props: Record<string, unknown>) => {
-    const { fill, priority, ...rest } = props;
-    return (
-      <img
-        {...rest}
-        data-fill={fill ? "true" : undefined}
-        data-priority={priority ? "true" : undefined}
-      />
-    );
-  },
+const mockShowToast = vi.fn();
+
+vi.mock("@/components/ui/toast", () => ({
+  useToast: () => ({ showToast: mockShowToast }),
 }));
 
-vi.mock("next/link", () => ({
-  default: ({
-    children,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => <a {...props}>{children}</a>,
+vi.mock("@/lib/actions/pipeline", () => ({
+  recordLibrarySend: vi.fn().mockResolvedValue({ success: true }),
 }));
 
-import LibraryPage from "@/app/hub/library/page";
 import { LibraryAccordion } from "@/components/hub/library-accordion";
-import { VideoLightbox } from "@/components/hub/video-lightbox";
+import type { LibraryItem } from "@/components/hub/library-accordion";
 
-describe("LibraryPage", () => {
+// ---------------------------------------------------------------------------
+// Factory functions
+// ---------------------------------------------------------------------------
+
+function makeItem(overrides: Partial<LibraryItem> = {}): LibraryItem {
+  return {
+    id: crypto.randomUUID(),
+    type: "faq",
+    title: "Test FAQ Title",
+    body: "This is test FAQ body content.",
+    author: null,
+    concern: null,
+    send_count: 0,
+    ...overrides,
+  };
+}
+
+const defaultProspects = [
+  { id: "p1", parent_first: "Jane", parent_last: "Doe", email: "jane@test.com" },
+  { id: "p2", parent_first: "Bob", parent_last: "Smith", email: null },
+];
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe("LibraryAccordion (DB-backed)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.location.hash = "";
   });
 
-  describe("page shell", () => {
-    it("renders the Library heading", () => {
-      render(<LibraryPage />);
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Library");
-    });
-  });
-});
+  it("renders DB-backed items as cards in accordion groups", () => {
+    const items = [
+      makeItem({ type: "faq", title: "FAQ Item 1" }),
+      makeItem({ type: "quote", title: "Quote Item", body: "Great school", author: "Parent A" }),
+      makeItem({ type: "talking", title: "Talking Point 1" }),
+    ];
 
-describe("LibraryAccordion", () => {
-  beforeEach(() => {
-    window.location.hash = "";
-  });
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
 
-  describe("accordion behavior", () => {
-    it("renders all 4 accordion items with correct labels", () => {
-      render(<LibraryAccordion />);
-      expect(screen.getByText("FAQ Library")).toBeInTheDocument();
-      expect(screen.getByText("Parent Testimonials")).toBeInTheDocument();
-      expect(
-        screen.getByText("“Why Alpha” Talking Points")
-      ).toBeInTheDocument();
-      expect(screen.getByText("A full Alpha website")).toBeInTheDocument();
-    });
-
-    it("renders website item as a link opening in new tab", () => {
-      render(<LibraryAccordion />);
-      const link = screen.getByText("A full Alpha website").closest("a");
-      expect(link).toHaveAttribute("href", "/hub/library/website-preview");
-      expect(link).toHaveAttribute("target", "_blank");
-      expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    });
-
-    it("starts with all items collapsed", () => {
-      render(<LibraryAccordion />);
-      const buttons = screen.getAllByRole("button", {
-        name: /FAQ Library|Parent Testimonials|Talking Points/i,
-      });
-      buttons.forEach((btn) => {
-        expect(btn).toHaveAttribute("aria-expanded", "false");
-      });
-    });
-
-    it("expands an item when clicked", () => {
-      render(<LibraryAccordion />);
-      const faqBtn = screen.getByRole("button", { name: /FAQ Library/i });
-      fireEvent.click(faqBtn);
-      expect(faqBtn).toHaveAttribute("aria-expanded", "true");
-    });
-
-    it("closes the previously open item when another is clicked (single-open)", () => {
-      render(<LibraryAccordion />);
-      const faqBtn = screen.getByRole("button", { name: /FAQ Library/i });
-      const testimonialsBtn = screen.getByRole("button", {
-        name: /Parent Testimonials/i,
-      });
-
-      fireEvent.click(faqBtn);
-      expect(faqBtn).toHaveAttribute("aria-expanded", "true");
-
-      fireEvent.click(testimonialsBtn);
-      expect(faqBtn).toHaveAttribute("aria-expanded", "false");
-      expect(testimonialsBtn).toHaveAttribute("aria-expanded", "true");
-    });
-
-    it("collapses an item when clicked again", () => {
-      render(<LibraryAccordion />);
-      const faqBtn = screen.getByRole("button", { name: /FAQ Library/i });
-      fireEvent.click(faqBtn);
-      expect(faqBtn).toHaveAttribute("aria-expanded", "true");
-
-      fireEvent.click(faqBtn);
-      expect(faqBtn).toHaveAttribute("aria-expanded", "false");
-    });
+    // Check that groups render
+    expect(screen.getByText(/FAQ/)).toBeInTheDocument();
+    expect(screen.getByText(/Testimonial/)).toBeInTheDocument();
+    expect(screen.getByText(/Talking Point/)).toBeInTheDocument();
   });
 
-  describe("fragment deep-linking", () => {
-    it("auto-expands FAQ section when hash is #faq", () => {
-      window.location.hash = "#faq";
-      render(<LibraryAccordion />);
-      const faqBtn = screen.getByRole("button", { name: /FAQ Library/i });
-      expect(faqBtn).toHaveAttribute("aria-expanded", "true");
-    });
+  it("testimonial cards use editorial italic styling", () => {
+    const items = [
+      makeItem({
+        type: "quote",
+        title: "Quote",
+        body: "Alpha changed our lives",
+        author: "Test Parent",
+      }),
+    ];
 
-    it("auto-expands testimonials section when hash is #testimonials", () => {
-      window.location.hash = "#testimonials";
-      render(<LibraryAccordion />);
-      const btn = screen.getByRole("button", {
-        name: /Parent Testimonials/i,
-      });
-      expect(btn).toHaveAttribute("aria-expanded", "true");
-    });
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
 
-    it("auto-expands talking points section when hash is #talking-points", () => {
-      window.location.hash = "#talking-points";
-      render(<LibraryAccordion />);
-      const btn = screen.getByRole("button", {
-        name: /Talking Points/i,
-      });
-      expect(btn).toHaveAttribute("aria-expanded", "true");
-    });
+    // Expand testimonial group
+    const testimonialBtn = screen.getByRole("button", { name: /Testimonial/i });
+    fireEvent.click(testimonialBtn);
 
-    it("ignores invalid fragments and keeps all items collapsed", () => {
-      window.location.hash = "#invalid";
-      render(<LibraryAccordion />);
-      const buttons = screen.getAllByRole("button", {
-        name: /FAQ Library|Parent Testimonials|Talking Points/i,
-      });
-      buttons.forEach((btn) => {
-        expect(btn).toHaveAttribute("aria-expanded", "false");
-      });
-    });
-
-    it("responds to hashchange events", () => {
-      render(<LibraryAccordion />);
-      const faqBtn = screen.getByRole("button", { name: /FAQ Library/i });
-      expect(faqBtn).toHaveAttribute("aria-expanded", "false");
-
-      window.location.hash = "#faq";
-      fireEvent(window, new HashChangeEvent("hashchange"));
-      expect(faqBtn).toHaveAttribute("aria-expanded", "true");
-    });
+    // Check for italic editorial text
+    const quoteText = screen.getByText(/Alpha changed our lives/);
+    expect(quoteText.className).toContain("italic");
+    expect(quoteText.className).toContain("font-[family-name:var(--font-editorial)]");
   });
 
-  describe("FAQ section", () => {
-    it("displays FAQ description when expanded", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /FAQ Library/i })
-      );
-      expect(
-        screen.getByText(/comprehensive FAQ covering admissions/i)
-      ).toBeInTheDocument();
-    });
+  it("clicking Send opens SendComposer", () => {
+    const items = [makeItem({ type: "faq", title: "My FAQ" })];
 
-    it("has a CTA linking to alpha.school/faq in a new tab", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /FAQ Library/i })
-      );
-      const cta = screen.getByText("Browse the FAQ");
-      const link = cta.closest("a");
-      expect(link).toHaveAttribute("href", "https://alpha.school/faq/");
-      expect(link).toHaveAttribute("target", "_blank");
-      expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    });
-  });
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
 
-  describe("testimonials section", () => {
-    it("renders video cards when expanded", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /Parent Testimonials/i })
-      );
-      expect(
-        screen.getByText("From Good to Great — No Learning Gaps")
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("30 Days to a Different Kid")
-      ).toBeInTheDocument();
-    });
+    // Expand FAQ group
+    const faqBtn = screen.getByRole("button", { name: /FAQ/i });
+    fireEvent.click(faqBtn);
 
-    it("renders thumbnails using YouTube CDN URL", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /Parent Testimonials/i })
-      );
-      const imgs = screen.getAllByRole("img");
-      const ytImg = imgs.find((img) =>
-        img.getAttribute("src")?.includes("img.youtube.com")
-      );
-      expect(ytImg).toBeDefined();
-      expect(ytImg?.getAttribute("src")).toContain("maxresdefault.jpg");
-    });
-  });
+    // Click Send button
+    const sendBtn = screen.getByText("Send →");
+    fireEvent.click(sendBtn);
 
-  describe("talking points section", () => {
-    it("renders all 10 talking point headings", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /Talking Points/i })
-      );
-      const headings = [
-        "2-Hour Learning Model",
-        "AI-Powered 1:1 Learning",
-        "Guides, Not Teachers",
-        "Life Skills & Entrepreneurship",
-        "Physical & Mental Wellness",
-        "Community & Connection",
-        "Daily Schedule",
-        "Outcomes",
-        "Student Experience",
-        "Press & Validation",
-      ];
-      headings.forEach((h) => {
-        expect(screen.getByText(h)).toBeInTheDocument();
-      });
-    });
-
-    it("does not contain campus-specific content", () => {
-      render(<LibraryAccordion />);
-      fireEvent.click(
-        screen.getByRole("button", { name: /Talking Points/i })
-      );
-      const content = document.body.textContent || "";
-      expect(content).not.toContain("South Bay");
-      expect(content).not.toContain("Toronto");
-      expect(content).not.toContain("Alpha Austin");
-      expect(content).not.toContain("Alpha San Francisco");
-    });
-  });
-});
-
-describe("VideoLightbox", () => {
-  let overflowBefore: string;
-
-  beforeEach(() => {
-    overflowBefore = document.body.style.overflow;
-  });
-
-  afterEach(() => {
-    document.body.style.overflow = overflowBefore;
-  });
-
-  it("renders when isOpen is true", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={vi.fn()}
-      />
-    );
+    // SendComposer should be open (check for dialog)
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Send from library")).toBeInTheDocument();
   });
 
-  it("does not render when isOpen is false", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={false}
-        onClose={vi.fn()}
-      />
-    );
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  it("empty library shows graceful 'No items yet' state", () => {
+    render(<LibraryAccordion items={[]} prospects={defaultProspects} />);
+
+    expect(screen.getByTestId("library-empty")).toBeInTheDocument();
+    expect(screen.getByText("No items yet")).toBeInTheDocument();
   });
 
-  it("iframe is not in DOM when closed", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={false}
-        onClose={vi.fn()}
-      />
-    );
-    expect(document.querySelector("iframe")).toBeNull();
+  it("groups items by type and shows count", () => {
+    const items = [
+      makeItem({ type: "faq", title: "FAQ 1" }),
+      makeItem({ type: "faq", title: "FAQ 2" }),
+      makeItem({ type: "data", title: "Data Item 1" }),
+    ];
+
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
+
+    // FAQ group header should show count
+    expect(screen.getByText("(2)")).toBeInTheDocument();
+    expect(screen.getByText("(1)")).toBeInTheDocument();
   });
 
-  it("uses youtube-nocookie.com domain", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={vi.fn()}
-      />
-    );
-    const iframe = document.querySelector("iframe");
-    expect(iframe?.src).toContain("youtube-nocookie.com");
+  it("accordion starts collapsed and expands on click", () => {
+    const items = [makeItem({ type: "faq", title: "Hidden FAQ" })];
+
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
+
+    // Items are hidden
+    expect(screen.queryByText("Hidden FAQ")).not.toBeInTheDocument();
+
+    // Click FAQ group button
+    const faqBtn = screen.getByRole("button", { name: /FAQ/i });
+    expect(faqBtn).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(faqBtn);
+    expect(faqBtn).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("Hidden FAQ")).toBeInTheDocument();
   });
 
-  it("calls onClose when close button is clicked", () => {
-    const onClose = vi.fn();
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={onClose}
-      />
-    );
-    fireEvent.click(screen.getByLabelText("Close video"));
-    expect(onClose).toHaveBeenCalled();
-  });
+  it("only one group open at a time", () => {
+    const items = [
+      makeItem({ type: "faq", title: "FAQ Content" }),
+      makeItem({ type: "talking", title: "Talking Content" }),
+    ];
 
-  it("calls onClose when Escape is pressed", () => {
-    const onClose = vi.fn();
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={onClose}
-      />
-    );
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(onClose).toHaveBeenCalled();
-  });
+    render(<LibraryAccordion items={items} prospects={defaultProspects} />);
 
-  it("calls onClose when backdrop is clicked", () => {
-    const onClose = vi.fn();
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={onClose}
-      />
-    );
-    const backdrop = document.querySelector("[aria-hidden='true']");
-    fireEvent.click(backdrop!);
-    expect(onClose).toHaveBeenCalled();
-  });
+    const faqBtn = screen.getByRole("button", { name: /FAQ/i });
+    const talkingBtn = screen.getByRole("button", { name: /Talking/i });
 
-  it("has role=dialog and aria-modal=true", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={vi.fn()}
-      />
-    );
-    const dialog = screen.getByRole("dialog");
-    expect(dialog).toHaveAttribute("aria-modal", "true");
-  });
+    fireEvent.click(faqBtn);
+    expect(screen.getByText("FAQ Content")).toBeInTheDocument();
 
-  it("locks body scroll when open", () => {
-    render(
-      <VideoLightbox
-        videoId="abc123"
-        title="Test Video"
-        isOpen={true}
-        onClose={vi.fn()}
-      />
-    );
-    expect(document.body.style.overflow).toBe("hidden");
+    fireEvent.click(talkingBtn);
+    expect(screen.queryByText("FAQ Content")).not.toBeInTheDocument();
+    expect(screen.getByText("Talking Content")).toBeInTheDocument();
   });
 });

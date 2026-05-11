@@ -369,7 +369,7 @@ export async function recordLibrarySend(data: unknown): Promise<ActionResult> {
   }
 
   // Parallel post-insert writes
-  const writes: Promise<unknown>[] = [
+  const writes: PromiseLike<unknown>[] = [
     supabase
       .from("prospects")
       .update({ last_touch_at: new Date().toISOString() })

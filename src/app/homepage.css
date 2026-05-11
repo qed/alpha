@@ -276,6 +276,42 @@
   color: var(--wp-white);
 }
 
+/* Hero CTA card (image + button, right column) */
+.wp-hero-cta-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.wp-hero-cta-image {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.wp-hero-cta-button {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 16px 32px;
+  background: var(--wp-blue);
+  color: var(--wp-white);
+  font-family: var(--wp-font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.wp-hero-cta-button:hover {
+  background: #0000CC;
+  transform: translateY(-1px);
+}
+
 /* Form card (inside hero right column) */
 .wp-events-card {
   background: var(--wp-white);

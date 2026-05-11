@@ -1,4 +1,4 @@
-import { HomepageForm } from "@/components/intake/homepage-form";
+import Image from "next/image";
 
 export function HomepageHero() {
   return (
@@ -31,8 +31,23 @@ export function HomepageHero() {
             </div>
           </div>
         </div>
-        <div>
-          <HomepageForm />
+        <div className="wp-hero-cta-card">
+          <Image
+            src="/artifacts/images/join_alpha.png"
+            alt="Where limitless families belong — 100+ families and growing"
+            width={600}
+            height={400}
+            className="wp-hero-cta-image"
+            priority
+          />
+          <a
+            href="https://community.alpha.school/?ref=UFB2FW8LX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="wp-hero-cta-button"
+          >
+            Join Alpha
+          </a>
         </div>
       </div>
     </section>

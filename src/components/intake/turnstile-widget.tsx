@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void;
+  onError?: () => void;
 }
 
 declare global {
@@ -25,7 +26,7 @@ declare global {
   }
 }
 
-export function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
+export function TurnstileWidget({ onVerify, onError }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
@@ -42,7 +43,7 @@ export function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
           callback: onVerify,
-          "error-callback": () => {},
+          "error-callback": () => onError?.(),
           "expired-callback": () => onVerify(""),
           theme: "light",
           appearance: "interaction-only",
@@ -54,7 +55,7 @@ export function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
     return () => {
       script.remove();
     };
-  }, [onVerify]);
+  }, [onVerify, onError]);
 
   return <div ref={containerRef} />;
 }

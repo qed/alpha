@@ -45,9 +45,19 @@ export function HomepageForm() {
     setTurnstileToken(token);
   }, []);
 
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken("");
+    setTurnstileKey((k) => k + 1);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!turnstileToken) {
+      setError("Verification not ready — please wait a moment and try again.");
+      return;
+    }
 
     if (!formState.postal_code.trim()) {
       setError("Postal code is required.");
@@ -271,11 +281,11 @@ export function HomepageForm() {
           </label>
         </div>
 
-        <TurnstileWidget key={turnstileKey} onVerify={handleTurnstile} />
+        <TurnstileWidget key={turnstileKey} onVerify={handleTurnstile} onError={handleTurnstileError} />
 
         <button
           type="submit"
-          disabled={submitting || !turnstileToken}
+          disabled={submitting}
           className="wp-form-submit"
         >
           {submitting ? "Submitting..." : "Express Interest"}
